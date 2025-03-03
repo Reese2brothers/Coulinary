@@ -8,18 +8,18 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface MatchDataDao {
-    @Query("SELECT * FROM MatchData")
-    fun getAll(): Flow<List<MatchData>>
+interface MainCategoriesDao {
+    @Query("SELECT * FROM MainCategories")
+    fun getAll(): Flow<List<MainCategories>>
 
     @Insert
-    suspend fun insert(matchdata: MatchData)
+    suspend fun insert(mainCategories: MainCategories)
 
     @Delete
-    suspend fun delete(matchdata: MatchData)
+    suspend fun delete(mainCategories: MainCategories)
 
-    @Query("DELETE FROM MatchData")
+    @Query("DELETE FROM MainCategories")
     suspend fun deleteAll()
     @Upsert
-    suspend fun update(matchdata: MatchData)
+    suspend fun update(mainCategories: MainCategories)
 }

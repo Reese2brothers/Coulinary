@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ScreenStatusBar(colorResource(id = R.color.black))
+            ScreenStatusBar(colorResource(id = R.color.boloto))
             val navController = rememberNavController()
             NavGraphNavigate(this, navController)
         }

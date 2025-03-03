@@ -4,11 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class MatchData(
-    val homename : String,
-    val awayname: String,
-    val tournament : String,
-    val venue : String
+data class MainCategories(
+    val title : String,
 )
 {
     @PrimaryKey(autoGenerate = true)
