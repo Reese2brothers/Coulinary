@@ -8,12 +8,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.paraglan.coulinary.screens.MainScreen
+import com.paraglan.coulinary.screens.one.OneScreen
+import com.paraglan.coulinary.screens.two.TwoScreen
 
 @Composable
 fun NavGraphNavigate(context : Context, navController: NavHostController) {
     NavHost(navController = navController, startDestination = "MainScreen") {
         composable("MainScreen") {
-            MainScreen()
+            MainScreen(navController = navController)
+        }
+        composable("OneScreen") {
+            OneScreen()
+        }
+        composable("TwoScreen") {
+            TwoScreen()
         }
 //        composable(route = "DetailsScreen/{title}/{content}",
 //            arguments = listOf(

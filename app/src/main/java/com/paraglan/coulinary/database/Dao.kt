@@ -13,12 +13,16 @@ interface MainCategoriesDao {
     @Query("SELECT * FROM MainCategories")
     fun getAll(): Flow<List<MainCategories>>
 
+    @Query("SELECT wordkey FROM maincategories")
+    suspend fun getAllKeys(): List<String>
+
+    @Query("SELECT * FROM maincategories WHERE wordkey = :wordkey")
+    suspend fun getSectionByWordkey(wordkey: String): MainCategories?
+
     @Insert
     suspend fun insert(mainCategories: MainCategories)
-
     @Delete
     suspend fun delete(mainCategories: MainCategories)
-
     @Query("DELETE FROM MainCategories")
     suspend fun deleteAll()
     @Upsert

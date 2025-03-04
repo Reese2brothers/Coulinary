@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class MainCategories(
     val title : String,
     val image : Int,
+    var wordkey : String,
     @PrimaryKey(autoGenerate = true) var id: Int = 0
 )
 

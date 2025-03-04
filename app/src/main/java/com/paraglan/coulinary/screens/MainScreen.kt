@@ -77,6 +77,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.room.Room
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
@@ -91,7 +92,7 @@ import java.net.URLEncoder
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("ContextCastToActivity")
 @Composable
-fun MainScreen(){
+fun MainScreen(navController: NavController){
     var isSearchIconClicked by remember {mutableStateOf(false)}
     val context = LocalContext.current as Activity
     val scope = rememberCoroutineScope()
@@ -101,6 +102,7 @@ fun MainScreen(){
     val keyboardController = LocalSoftwareKeyboardController.current
     var searchText by remember { mutableStateOf("") }
     var text by remember { mutableStateOf("") }
+    var wordkey by remember { mutableStateOf("") }
     var choiceimage by remember { mutableStateOf(R.drawable.baseline_image_24) }
     var panelStateRight by remember { mutableStateOf(PanelState.Hidden) }
     var panelStateLeft by remember { mutableStateOf(PanelState.Hidden) }
@@ -113,6 +115,19 @@ fun MainScreen(){
     val showDialogFavDeleteAll = remember { mutableStateOf(false) }
     val showDialogDeleteMainItem = remember { mutableStateOf(false) }
     val showDialogEditMainItem = remember { mutableStateOf(false) }
+
+    val wordKeys = listOf(
+        "one", "two", "three", "four", "five",
+        "six", "seven", "eight", "nine", "ten",
+        "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+        "sixteen", "seventeen", "eighteen", "nineteen", "twenty",
+        "twentyone", "twentytwo", "twentythree", "twentyfour", "twentyfive",
+        "twentysix", "twentyseven", "twentyeight", "twentynine", "thirty",
+        "thirtyone", "thirtytwo", "thirtythree", "thirtyfour", "thirtyfive", "thirtysix",
+        "thirtyseven", "thirtyeight", "thirtynine", "forty", "fortyone", "fortytwo",
+        "fortythree", "fortyfour", "fortyfive", "fortysix", "fortyseven",
+        "fortyeight", "fortynine", "fifty"
+    )
 
     val listimages = listOf(R.drawable.gorshokkk, R.drawable.konhveti, R.drawable.lazania, R.drawable.lazaniatwo,
         R.drawable.lepeshka, R.drawable.lepeshkatwo, R.drawable.meetrulet, R.drawable.meetrulettwo,
@@ -259,7 +274,12 @@ fun MainScreen(){
                         .fillMaxWidth().height(150.dp).background(Color.Transparent), shape = CutCornerShape(bottomStart = 8.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
                         border = BorderStroke(1.dp, color = colorResource(id = R.color.boloto)),
-                        onClick = { }) {
+                        onClick = {
+                            when(item.wordkey) {
+                                "one" -> { navController.navigate("OneScreen") }
+                                "two" -> { navController.navigate("TwoScreen") }
+                            }
+                        }) {
                         Row(modifier = Modifier.fillMaxSize().background(colorResource(R.color.white)),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center) {
@@ -312,6 +332,7 @@ fun MainScreen(){
                                                         showDialogEditMainItem.value = false
                                                         text = selectedItemEditMainItem!!.title
                                                         choiceimage = selectedItemEditMainItem!!.image
+                                                        wordkey = selectedItemEditMainItem!!.wordkey
                                                         selectedCategoryId = selectedItemEditMainItem!!.id
                                                         panelStateRight = PanelState.Expanded
                                                     }) {
@@ -324,7 +345,9 @@ fun MainScreen(){
                                             dismissButton = {
                                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                                                     containerColor = colorResource(id = R.color.boloto)),
-                                                    onClick = { showDialogEditMainItem.value = false }) {
+                                                    onClick = { showDialogEditMainItem.value = false
+                                                        focusRequester.freeFocus()
+                                                        keyboardController?.hide()}) {
                                                     androidx.compose.material.Text(stringResource(R.string.cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
                                                 }
                                             })
@@ -353,6 +376,8 @@ fun MainScreen(){
                                                     containerColor = colorResource(id = R.color.boloto)),
                                                     onClick = {
                                                         scope.launch { db.mainCategoriesDao().delete(selectedItemMainDeleteItem!!) }
+                                                        focusRequester.freeFocus()
+                                                        keyboardController?.hide()
                                                         showDialogDeleteMainItem.value = false
                                                     }) {
                                                     androidx.compose.material.Text(stringResource(R.string.yes), color = colorResource(id = R.color.white),
@@ -363,7 +388,9 @@ fun MainScreen(){
                                             dismissButton = {
                                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                                                     containerColor = colorResource(id = R.color.boloto)),
-                                                    onClick = { showDialogDeleteMainItem.value = false }) {
+                                                    onClick = { showDialogDeleteMainItem.value = false
+                                                        focusRequester.freeFocus()
+                                                        keyboardController?.hide()}) {
                                                     androidx.compose.material.Text(stringResource(R.string.cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
                                                 }
                                             })
@@ -385,7 +412,9 @@ fun MainScreen(){
                      Row(modifier = Modifier.fillMaxWidth().padding(start = 24.dp, top = 16.dp), horizontalArrangement = Arrangement.Start,
                          verticalAlignment = Alignment.CenterVertically){
                          Icon(painter = painterResource(R.drawable.exitright), contentDescription = "exitresources",
-                             modifier = Modifier.size(30.dp).clickable { panelStateRight = PanelState.Hidden }
+                             modifier = Modifier.size(30.dp).clickable { panelStateRight = PanelState.Hidden
+                                 focusRequester.freeFocus()
+                                 keyboardController?.hide()}
                          , tint = colorResource(R.color.white))
                      }
                      Image(painter = painterResource(choiceimage), contentDescription = "choiceimage",
@@ -417,14 +446,27 @@ fun MainScreen(){
                              panelStateRight = PanelState.Hidden
                              focusRequester.freeFocus()
                              keyboardController?.hide()
+                             var newWordKey: String? = null
                              if(text.isNotEmpty()){
                                  scope.launch {
-                                     val item = MainCategories(title = text, image = choiceimage, id = selectedCategoryId)
-                                     db.mainCategoriesDao().update(item)
+                                     val existingKeys = db.mainCategoriesDao().getAllKeys()
+                                     for (key in wordKeys) {
+                                         if (!existingKeys.contains(key)) {
+                                             newWordKey = key
+                                             break
+                                         }
+                                     }
+                                     if (newWordKey == null) {
+                                         Toast.makeText(context,
+                                             context.getString(R.string.nothing_else_save), Toast.LENGTH_SHORT).show()
+                                     } else {
+                                         val item = MainCategories(title = text, image = choiceimage, wordkey = newWordKey!!, id = selectedCategoryId)
+                                         db.mainCategoriesDao().update(item)
+                                         Toast.makeText(context, context.getString(R.string.new_category_saved), Toast.LENGTH_SHORT).show()
+                                     }
                                  }
                              } else {
-                                 Toast.makeText(context,
-                                     context.getString(R.string.enter_name_category), Toast.LENGTH_SHORT).show()
+                                 Toast.makeText(context, context.getString(R.string.enter_name_category), Toast.LENGTH_SHORT).show()
                              }
                          },
                          contentAlignment = Alignment.Center){

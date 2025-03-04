@@ -12,4 +12,6 @@
     <string name="favourite">Избранное</string>
     <string name="delete_all_from_favourite">Удалить все из избранного?</string>
     <string name="delete_from_favourite">Удалить из избранного?</string>
+    <string name="nothing_else_save">Больше ничего сохранить нельзя!</string>
+    <string name="new_category_saved">Новая категория сохранена!</string>
 </resources>
