@@ -14,4 +14,13 @@
     <string name="delete_from_favourite">Удалить из избранного?</string>
     <string name="nothing_else_save">Больше ничего сохранить нельзя!</string>
     <string name="new_category_saved">Новая категория сохранена!</string>
+    <string name="links">Ссылки</string>
+    <string name="delete_all_links">Удалить все ссылки?</string>
+    <string name="enter_new_link">Вставьте новую ссылку!</string>
+    <string name="enter_link">вставьте ссылку...</string>
+    <string name="please_check_your_link">Пожалуйста, проверьте свою ссылку!</string>
+    <string name="delete_link">Удалить ссылку?</string>
+    <string name="enter_comment">ваш комментарий...</string>
+    <string name="edit_comment">Редактировать комментарий?</string>
+    <string name="the_link_is_copied">Ссылка скопирована в буфер обмена!</string>
 </resources>

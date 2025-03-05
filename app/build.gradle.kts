@@ -108,4 +108,9 @@ dependencies {
     //Glide
     implementation (libs.glide)
     annotationProcessor (libs.compiler)
+
+    implementation("org.jsoup:jsoup:1.17.2")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("androidx.core:core-ktx:1.12.0")
 }

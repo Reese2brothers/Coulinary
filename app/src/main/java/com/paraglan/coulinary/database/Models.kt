@@ -22,3 +22,15 @@ data class Favourites(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 }
+
+@Entity
+data class One(
+    val title : String,
+    val content : String,
+    val images : String,
+    val videos : String
+)
+{
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
+}

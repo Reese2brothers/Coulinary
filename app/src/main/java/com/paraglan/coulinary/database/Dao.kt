@@ -19,6 +19,9 @@ interface MainCategoriesDao {
     @Query("SELECT * FROM maincategories WHERE wordkey = :wordkey")
     suspend fun getSectionByWordkey(wordkey: String): MainCategories?
 
+    @Query("SELECT * FROM maincategories WHERE id = :id")
+    suspend fun getCategoryById(id: Int): MainCategories?
+
     @Insert
     suspend fun insert(mainCategories: MainCategories)
     @Delete
@@ -26,9 +29,8 @@ interface MainCategoriesDao {
     @Query("DELETE FROM MainCategories")
     suspend fun deleteAll()
     @Upsert
-    suspend fun update(mainCategories: MainCategories)
+    suspend fun upsert(mainCategories: MainCategories)
 }
-
 @Dao
 interface FavouritesDao {
     @Query("SELECT * FROM favourites")
@@ -54,4 +56,57 @@ interface FavouritesDao {
 
     @Query("SELECT COUNT(*) FROM favourites")
     suspend fun getCount(): Int
+}
+@Dao
+interface OneDao {
+    @Query("SELECT * FROM one")
+    fun getAll(): Flow<List<One>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertOne(one: One)
+
+    @Delete
+    suspend fun deleteOne(one: One)
+
+    @Query("DELETE FROM one")
+    suspend fun deleteAll()
+
+    @Query("SELECT images FROM one WHERE title = :title")
+    suspend fun getImagesByTitle(title: String): String
+
+    @Query("UPDATE one SET images = :images WHERE title = :title")
+    suspend fun updateImages(title: String, images: String)
+
+    @Query("SELECT * FROM one")
+    suspend fun getAllImages(): List<One>
+
+    @Query("UPDATE one SET title = :newTitle, content = :newContent, images = :currentImage WHERE title = :oldTitle")
+    suspend fun updateRecepie(newTitle: String, newContent: String, oldTitle: String, currentImage: String)
+
+    @Query("SELECT title FROM One")
+    suspend fun getTitle(): String
+
+    @Query("SELECT content FROM One")
+    suspend fun getContent(): String
+
+    @Query("UPDATE one SET videos = :videos WHERE title = :title")
+    suspend fun updateVideos(title: String, videos: String)
+
+    @Query("SELECT videos FROM one WHERE title = :title")
+    suspend fun getVideosByTitle(title: String): String
+
+    @Query("UPDATE one SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE title = :title")
+    suspend fun appendVideo(title: String, newVideo: String)
+
+    @Query("SELECT COUNT(*) FROM one WHERE title = :title")
+    suspend fun getVideoCountByTitle(title: String): Int
+
+    @Query("SELECT images FROM one WHERE title = :title")
+    suspend fun getImages(title: String): String?
+
+    @Query("UPDATE one SET images = CASE WHEN images IS NULL OR images = '' THEN :images ELSE images || ',' || :images END WHERE title = :title")
+    suspend fun appendImage(title: String, images: String)
+
+    @Query("UPDATE one SET images = '' WHERE title = :title")
+    suspend fun clearImages(title: String)
 }

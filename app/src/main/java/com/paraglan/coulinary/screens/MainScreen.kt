@@ -432,7 +432,7 @@ fun MainScreen(navController: NavController){
                          ) },
                          textStyle = TextStyle(color = colorResource(R.color.white), fontSize = 20.sp),
                          modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
-                             .border(2.dp, Color.White, RoundedCornerShape(8.dp)),
+                             .border(2.dp, Color.White, RoundedCornerShape(16.dp)),
                          colors = TextFieldDefaults.outlinedTextFieldColors(
                              focusedBorderColor = Color.White,
                              unfocusedBorderColor = Color.White,
@@ -446,23 +446,33 @@ fun MainScreen(navController: NavController){
                              panelStateRight = PanelState.Hidden
                              focusRequester.freeFocus()
                              keyboardController?.hide()
-                             var newWordKey: String? = null
-                             if(text.isNotEmpty()){
-                                 scope.launch {
-                                     val existingKeys = db.mainCategoriesDao().getAllKeys()
-                                     for (key in wordKeys) {
-                                         if (!existingKeys.contains(key)) {
-                                             newWordKey = key
-                                             break
+                             //var newWordKey: String? = null
+                             if (text.isNotEmpty()) {
+                                 scope.launch { if (selectedCategoryId == 0) {
+                                         var newWordKey: String? = null
+                                         val existingKeys = db.mainCategoriesDao().getAllKeys()
+                                         for (key in wordKeys) {
+                                             if (!existingKeys.contains(key)) {
+                                                 newWordKey = key
+                                                 break
+                                             }
                                          }
-                                     }
-                                     if (newWordKey == null) {
-                                         Toast.makeText(context,
-                                             context.getString(R.string.nothing_else_save), Toast.LENGTH_SHORT).show()
+                                         if (newWordKey == null) {
+                                             Toast.makeText(context, context.getString(R.string.nothing_else_save), Toast.LENGTH_SHORT).show()
+                                         } else {
+                                             val item = MainCategories(title = text, image = choiceimage, wordkey = newWordKey, id = 0)
+                                             db.mainCategoriesDao().insert(item)
+                                             Toast.makeText(context, context.getString(R.string.new_category_saved), Toast.LENGTH_SHORT).show()
+                                         }
                                      } else {
-                                         val item = MainCategories(title = text, image = choiceimage, wordkey = newWordKey!!, id = selectedCategoryId)
-                                         db.mainCategoriesDao().update(item)
-                                         Toast.makeText(context, context.getString(R.string.new_category_saved), Toast.LENGTH_SHORT).show()
+                                         val existingItem = db.mainCategoriesDao().getCategoryById(selectedCategoryId)
+                                         if (existingItem != null) {
+                                             val item = MainCategories(title = text, image = choiceimage, wordkey = existingItem.wordkey, id = selectedCategoryId)
+                                             db.mainCategoriesDao().upsert(item)
+                                             Toast.makeText(context, context.getString(R.string.new_category_saved), Toast.LENGTH_SHORT).show()
+                                         } else {
+                                             Toast.makeText(context, context.getString(R.string.nothing_else_save), Toast.LENGTH_SHORT).show()
+                                         }
                                      }
                                  }
                              } else {
