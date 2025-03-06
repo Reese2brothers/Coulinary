@@ -28,9 +28,6 @@ data class One(
     val title : String,
     val content : String,
     val images : String,
-    val videos : String
+    val videos : String,
+    @PrimaryKey(autoGenerate = true) var id: Int = 0
 )
-{
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
-}

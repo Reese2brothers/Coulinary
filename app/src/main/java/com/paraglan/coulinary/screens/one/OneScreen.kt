@@ -7,8 +7,12 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
@@ -27,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,9 +43,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -63,13 +70,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -93,13 +105,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
+import androidx.core.net.toUri
 import androidx.room.Room
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
 import com.paraglan.coulinary.database.One
 import com.paraglan.coulinary.database.OneLinks
+import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.PanelState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -110,8 +125,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.io.File
 import java.net.URL
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.exists
 
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,19 +139,21 @@ fun OneScreen() {
     val context = LocalContext.current as Activity
     val scope = rememberCoroutineScope()
     val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "database").build() }
-    val dairyList by db.mainCategoriesDao().getAll().collectAsState(initial = emptyList())
+    val dairyList by db.oneDao().getAll().collectAsState(initial = emptyList())
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     var searchText by remember { mutableStateOf("") }
-    var text by remember { mutableStateOf("") }
     var commentForLink by remember { mutableStateOf("") }
     var titleLink by remember { mutableStateOf("") }
-    var textLink by remember { mutableStateOf("") }
-    var imageLink by remember { mutableStateOf("") }
+    var newTitleText by remember { mutableStateOf("") }
+    var newContentText by remember { mutableStateOf("") }
     var panelStateLeft by remember { mutableStateOf(PanelState.Hidden) }
+    var panelStateRight by remember { mutableStateOf(PanelState.Hidden) }
     val listState = rememberLazyListState()
     var isLoading by remember { mutableStateOf(false) }
     var isFirstLaunch by remember { mutableStateOf(true) }
+    var selectedRecipeId by remember { mutableStateOf<Int>(0) }
+    var selectedRecipeVideo by remember { mutableStateOf("") }
 
     val itemsFlow: Flow<List<OneLinks>> = db.oneLinksDao().getAll()
     val onelistFlow: Flow<List<One>> = db.oneDao().getAll()
@@ -144,19 +163,46 @@ fun OneScreen() {
     val showDialogAddNewLink = remember { mutableStateOf(false) }
     val showDialogDeleteItemLink = remember { mutableStateOf(false) }
     val showDialogLinkEditComment = remember { mutableStateOf(false) }
-    var selectedItemLink by remember { mutableStateOf<OneLinks?>(null) }
+    var showDialogDeleteItemRecipe = remember { mutableStateOf(false) }
+    var showDialogEditItemRecipe = remember { mutableStateOf(false) }
+    var selectedDeleteItemRecipe by remember { mutableStateOf<One?>(null) }
+    var selectedEditItemRecipe by remember { mutableStateOf<One?>(null) }
     var selectedDeleteItemLink by remember { mutableStateOf<OneLinks?>(null) }
     var selectedEditItemLink by remember { mutableStateOf<OneLinks?>(null) }
     var selectedItemAddNewLink by remember { mutableStateOf<OneLinks?>(null) }
 
-
+    var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var launchCamera: () -> Unit = {}
+    var launchPhotoPicker: () -> Unit = {}
+    ImagePicker(
+        onImageSelected = { uri ->
+            Log.d("OneScreen", "selectedImageUri: $uri")
+            selectedImageUri = uri
+            bitmap = null
+        },
+        onBitmapSelected = { btm ->
+            bitmap = btm
+        },
+        onLaunchCamera = { cameraLauncher ->
+            launchCamera = cameraLauncher
+        },
+        onLaunchPhotoPicker = { photoPickerLauncher ->
+            launchPhotoPicker = photoPickerLauncher
+        }
+    )
     //выдвижная панель слева
     val panelWidthLeft = 350.dp
     val animatedOffsetLeft by animateDpAsState(
         targetValue = if (panelStateLeft == PanelState.Expanded) 0.dp else panelWidthLeft,
         animationSpec = tween(durationMillis = 300)
     )
-
+    //выдвижная панель справа
+    val panelWidthRight = 350.dp
+    val animatedOffsetRight by animateDpAsState(
+        targetValue = if (panelStateRight == PanelState.Expanded) 0.dp else panelWidthRight,
+        animationSpec = tween(durationMillis = 300)
+    )
     val filteredList = if (searchText.isEmpty()) {
         dairyList
     } else {
@@ -180,6 +226,11 @@ fun OneScreen() {
     LaunchedEffect(key1 = isFirstLaunch) {
         if (isFirstLaunch) {
             listState.scrollToItem(0)
+        }
+    }
+    LaunchedEffect(key1 = bitmap) {
+        if (bitmap != null) {
+            Log.d("OneScreen", "LaunchedEffect bitmap: $bitmap")
         }
     }
 
@@ -238,16 +289,20 @@ fun OneScreen() {
                 )
                 Icon(painter = painterResource(R.drawable.baseline_add_box_24), contentDescription = "box",
                     modifier = Modifier.size(40.dp).clickable {
-                        text = ""
+                        selectedImageUri = null
+                        newTitleText = ""
+                        newContentText = ""
+                        selectedRecipeVideo = ""
+                        selectedRecipeId = 0
+                        panelStateRight = PanelState.Expanded
                     }, tint = colorResource(R.color.yellow)
                 )
             }
             LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp, bottom = 4.dp)) {
-                itemsIndexed(onelist) {index, item ->
+                itemsIndexed(filteredList) {index, item ->
                     Card(modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
                         .fillMaxWidth().height(120.dp).background(Color.Transparent),
                         shape = CutCornerShape(bottomStart = 8.dp),
-                        //elevation = 5.dp,
                         border = BorderStroke(1.dp, color = colorResource(id = R.color.boloto)),
                         onClick = {
 
@@ -259,7 +314,6 @@ fun OneScreen() {
                                 Row(modifier = Modifier.fillMaxHeight().background(colorResource(R.color.white)),
                                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                                     val firstImageUri = item.images.split(",")
-
                                         .firstOrNull { it.startsWith("content://") }
                                         ?.trim()
                                         ?: item.images.split(",").firstOrNull()?.trim()
@@ -295,81 +349,129 @@ fun OneScreen() {
                                         color = colorResource(id = R.color.boloto),
                                     )
                                     val isFavourite by produceState<Boolean>(initialValue = false, item.title) {
-                                        value = db.favouritesDao().isFavourite(item.title, "OneRecepiesScreen")
+                                        value = db.favouritesDao().isFavourite(item.title, "OneRecipesScreen")
                                     }
-                                    androidx.compose.material.Icon(
-                                        painter = painterResource(
-                                            id = if (isFavourite) R.drawable.baseline_favorite_24 else R.drawable.baseline_favorite_border_24
-                                        ),
+                                    androidx.compose.material.Icon(painter = painterResource(
+                                            id = if (isFavourite) R.drawable.baseline_favorite_24 else
+                                                R.drawable.baseline_favorite_border_24),
                                         contentDescription = "show_favourites",
-                                        modifier = Modifier
-                                            .size(25.dp)
-                                            .padding(end = 8.dp, bottom = 4.dp),
+                                        modifier = Modifier.size(25.dp).padding(end = 8.dp, bottom = 4.dp),
                                         tint = Color.Unspecified
                                     )
                                 }
-                                androidx.compose.material.Icon(
-                                    painter = painterResource(id = R.drawable.delete),
-                                    contentDescription = "delete_item",
-                                    modifier = Modifier
-                                        .size(30.dp)
-                                        .padding(end = 8.dp, bottom = 4.dp)
-                                        .clickable {
-                                            //showDialogThree.value = true
-                                            //selectedItemTwo = item
-                                        },
-                                    tint = colorResource(R.color.boloto)
+                                Image(painter = painterResource(id = R.drawable.edit),
+                                    contentDescription = "edit_item", modifier = Modifier.size(30.dp)
+                                        .padding(end = 8.dp, bottom = 4.dp).clickable {
+                                            showDialogEditItemRecipe.value = true
+                                            selectedEditItemRecipe = item
+                                        }
                                 )
-//                                if (showDialogThree.value) {
-//                                    AlertDialog(
-//                                        onDismissRequest = {
-//                                            showDialogThree.value = false
-//                                        },
-//                                        containerColor = colorResource(id = R.color.white),
-//                                        title = { androidx.compose.material.Text(stringResource(R.string.alert_confirm), color = colorResource(id = R.color.broun),
-//                                            fontSize = 20.sp, fontWeight = FontWeight.Bold) },
-//                                        text = {
-//                                            androidx.compose.material.Text(
-//                                                stringResource(R.string.alert_delete_recepie),
-//                                                color = colorResource(id = R.color.broun)
-//                                            )
-//                                        },
-//                                        confirmButton = {
-//                                            Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-//                                                containerColor = colorResource(id = R.color.broun)
-//                                            ),
-//                                                onClick = {
-//                                                    scope.launch {
-//                                                        val imageUrisToDelete = selectedItemTwo?.images?.split(",")
-//                                                            ?.filter { it.isNotBlank() && it.startsWith("content://") }
-//                                                            ?.map { Uri.parse(it) } ?: emptyList()
-//                                                        selectedItemTwo?.let { db.oneDao().deleteOne(it) }
-//                                                        imageUrisToDelete.forEach { imageUri ->
-//                                                            context.contentResolver.delete(imageUri, null, null)
-//                                                        }
-//                                                        val videoUrisToDelete = selectedItemTwo?.videos?.split(",")
-//                                                            ?.filter { it.isNotBlank() && it.startsWith("content://") }
-//                                                            ?.map { Uri.parse(it) } ?: emptyList()
-//                                                        videoUrisToDelete.forEach { videoUri ->
-//                                                            context.contentResolver.delete(videoUri, null, null)
-//                                                        }
-//                                                    }
-//                                                    showDialogThree.value = false
-//                                                }) {
-//                                                androidx.compose.material.Text(stringResource(R.string.alert_yes), color = colorResource(id = R.color.white), fontSize = 16.sp)
-//                                            }
-//                                        },
-//                                        dismissButton = {
-//                                            Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-//                                                containerColor = colorResource(id = R.color.broun)
-//                                            ),
-//                                                onClick = {
-//                                                    showDialogThree.value = false
-//                                                }) {
-//                                                androidx.compose.material.Text(stringResource(R.string.alert_cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
-//                                            }
-//                                        })
-//                                }
+                                if (showDialogEditItemRecipe.value) {
+                                    AlertDialog(onDismissRequest = { showDialogEditItemRecipe.value = false },
+                                        containerColor = colorResource(id = R.color.white),
+                                        title = { androidx.compose.material.Text(stringResource(R.string.confirm),
+                                            color = colorResource(id = R.color.boloto),
+                                            fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                                        },
+                                        text = { androidx.compose.material.Text(stringResource(R.string.edit_recipe),
+                                            color = colorResource(id = R.color.boloto))
+                                        },
+                                        confirmButton = {
+                                            Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                                containerColor = colorResource(id = R.color.boloto)), onClick = {
+                                                    panelStateRight = PanelState.Expanded
+                                                newTitleText = selectedEditItemRecipe!!.title ?: ""
+                                                newContentText = selectedEditItemRecipe!!.content ?: ""
+                                                selectedImageUri = selectedEditItemRecipe!!.images.toUri()
+                                                selectedRecipeVideo = selectedEditItemRecipe!!.videos
+                                                selectedRecipeId = selectedEditItemRecipe!!.id
+                                                focusRequester.freeFocus()
+                                                keyboardController?.hide()
+                                                showDialogEditItemRecipe.value = false
+                                            }) {
+                                                androidx.compose.material.Text(stringResource(R.string.yes), color = colorResource(id = R.color.white),
+                                                    fontSize = 16.sp
+                                                )
+                                            }
+                                        },
+                                        dismissButton = {
+                                            Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                                containerColor = colorResource(id = R.color.boloto)),
+                                                onClick = { showDialogEditItemRecipe.value = false
+                                                    focusRequester.freeFocus()
+                                                    keyboardController?.hide()}) {
+                                                androidx.compose.material.Text(stringResource(R.string.cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
+                                            }
+                                        })
+                                }
+                                Image(painter = painterResource(id = R.drawable.delete),
+                                    contentDescription = "delete_item", modifier = Modifier.size(30.dp)
+                                        .padding(end = 8.dp, bottom = 4.dp).clickable {
+                                            showDialogDeleteItemRecipe.value = true
+                                            selectedDeleteItemRecipe = item
+                                        }
+                                )
+                                if (showDialogDeleteItemRecipe.value) {
+                                    AlertDialog(onDismissRequest = { showDialogDeleteItemRecipe.value = false },
+                                        containerColor = colorResource(id = R.color.white),
+                                        title = { androidx.compose.material.Text(stringResource(R.string.confirm),
+                                            color = colorResource(id = R.color.boloto),
+                                            fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                                        },
+                                        text = { androidx.compose.material.Text(stringResource(R.string.delete_recipe),
+                                            color = colorResource(id = R.color.boloto))
+                                        },
+                                        confirmButton = {
+                                            Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                                containerColor = colorResource(id = R.color.boloto)), onClick = {
+                                                scope.launch {
+                                                    val imageUrisToDelete = selectedDeleteItemRecipe?.images?.split(",")
+                                                        ?.filter { it.isNotBlank() }
+                                                        ?.map { Uri.parse(it) } ?: emptyList()
+                                                    selectedDeleteItemRecipe?.let { db.oneDao().delete(it) }
+                                                    imageUrisToDelete.forEach { imageUri ->
+                                                        if (imageUri.scheme == "content") {
+                                                            context.contentResolver.delete(imageUri, null, null)
+                                                        } else if (imageUri.scheme == "file") {
+                                                            val file = File(imageUri.path!!)
+                                                            if (file.exists()) {
+                                                                file.delete()
+                                                            }
+                                                        }
+                                                    }
+                                                    val videoUrisToDelete = selectedDeleteItemRecipe?.videos?.split(",")
+                                                        ?.filter { it.isNotBlank() }
+                                                        ?.map { Uri.parse(it) } ?: emptyList()
+                                                    videoUrisToDelete.forEach { videoUri ->
+                                                        if (videoUri.scheme == "content") {
+                                                            context.contentResolver.delete(videoUri, null, null)
+                                                        } else if (videoUri.scheme == "file") {
+                                                            val file = File(videoUri.path!!)
+                                                            if (file.exists()) {
+                                                                file.delete()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                focusRequester.freeFocus()
+                                                keyboardController?.hide()
+                                                showDialogDeleteItemRecipe.value = false
+                                            }) {
+                                                androidx.compose.material.Text(stringResource(R.string.yes), color = colorResource(id = R.color.white),
+                                                    fontSize = 16.sp
+                                                )
+                                            }
+                                        },
+                                        dismissButton = {
+                                            Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                                containerColor = colorResource(id = R.color.boloto)),
+                                                onClick = { showDialogDeleteItemRecipe.value = false
+                                                    focusRequester.freeFocus()
+                                                    keyboardController?.hide()}) {
+                                                androidx.compose.material.Text(stringResource(R.string.cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
+                                            }
+                                        })
+                                }
                             }
                         }
                     }
@@ -378,9 +480,13 @@ fun OneScreen() {
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Column(modifier = Modifier.fillMaxHeight().width(panelWidthLeft)
-                .offset(x = -animatedOffsetLeft).background(colorResource(R.color.trboloto),
-                    shape = CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
-                ), horizontalAlignment = Alignment.CenterHorizontally) {
+                .offset(x = -animatedOffsetLeft)
+                .background(brush = Brush.linearGradient(
+                    colors = listOf(colorResource(R.color.white), colorResource(R.color.trboloto)),
+                    start = Offset(0f, Float.POSITIVE_INFINITY),
+                    end = Offset(Float.POSITIVE_INFINITY, 0f)
+                ), shape = CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)),
+                horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(modifier = Modifier.fillMaxWidth().padding(end = 24.dp, top = 16.dp),
                     horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(R.string.links), modifier = Modifier.offset(x = -70.dp),
@@ -395,6 +501,7 @@ fun OneScreen() {
                     Icon(painter = painterResource(id = R.drawable.baseline_add_box_24),
                         contentDescription = "add_new_link",
                         modifier = Modifier.size(40.dp).padding(end = 8.dp).offset(x = -12.dp).clickable {
+                            commentForLink = ""
                             showDialogAddNewLink.value = true
                         }, tint = colorResource(R.color.yellow)
                     )
@@ -548,7 +655,10 @@ fun OneScreen() {
                             })
                     }
                     Icon(painter = painterResource(R.drawable.exitleft), contentDescription = "exitlinks",
-                        modifier = Modifier.size(30.dp).clickable { panelStateLeft = PanelState.Hidden },
+                        modifier = Modifier.size(30.dp).clickable {
+                            focusRequester.freeFocus()
+                            keyboardController?.hide()
+                            panelStateLeft = PanelState.Hidden },
                         tint = colorResource(R.color.white))
                 }
                 LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 8.dp), state = listState) {
@@ -728,14 +838,177 @@ fun OneScreen() {
                                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                         val clip = ClipData.newPlainText("Copied Text", item.link)
                                         clipboard.setPrimaryClip(clip)
-                                        //withContext(Dispatchers.Main){
-                                        Toast.makeText(context,
-                                            context.getString(R.string.the_link_is_copied), Toast.LENGTH_SHORT).show()
-                                        // }
+                                        Toast.makeText(context, context.getString(R.string.the_link_is_copied), Toast.LENGTH_SHORT).show()
                                     }, contentScale = ContentScale.FillBounds
                                 )
                             }
                         }
+                    }
+                }
+            }
+        }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
+            Column(modifier = Modifier.fillMaxHeight().width(panelWidthRight)
+                .offset(x = animatedOffsetRight).background( brush = Brush.linearGradient(
+                    colors = listOf(colorResource(R.color.trboloto), colorResource(R.color.white)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)),
+                shape = CutCornerShape(topStart = 16.dp, bottomStart = 16.dp)),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(modifier = Modifier.fillMaxWidth().padding(start = 24.dp, top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painter = painterResource(R.drawable.exitright), contentDescription = "exitresources",
+                        modifier = Modifier.size(30.dp).clickable {
+                            panelStateRight = PanelState.Hidden
+                            focusRequester.freeFocus()
+                            keyboardController?.hide()
+                        }, tint = colorResource(R.color.white)
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.width(160.dp).padding(end = 4.dp)) {
+                        Image(painter = painterResource(R.drawable.cameraicon),
+                            contentDescription = "cameraicon",
+                            modifier = Modifier.size(30.dp).clickable {
+                                launchCamera()
+                            }
+                        )
+                        Image(painter = painterResource(R.drawable.galleryicon),
+                            contentDescription = "galleryicon",
+                            modifier = Modifier.size(30.dp).clickable {
+                                launchPhotoPicker()
+                            }
+                        )
+                        Image(painter = painterResource(R.drawable.delete),
+                            contentDescription = "deletephoto",
+                            modifier = Modifier.size(25.dp).clickable {
+                                selectedImageUri = null
+                                bitmap = null
+                            }
+                        )
+                    }
+                }
+                Column(modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 8.dp).verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally){
+                    if (bitmap != null && !bitmap!!.isRecycled) {
+                        Image(bitmap = bitmap!!.asImageBitmap(), contentDescription = "playerphoto",
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).width(300.dp)
+                                .height(180.dp).clip(RoundedCornerShape(16.dp)), contentScale = ContentScale.Crop
+                        )
+                    } else if (selectedImageUri != null) {
+                        Image(painter = rememberAsyncImagePainter(model = selectedImageUri,
+                            placeholder = painterResource(R.drawable.noimage), error = painterResource(R.drawable.noimage),
+                                fallback = painterResource(R.drawable.noimage)),
+                            contentDescription = "playerphoto",
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).width(300.dp).height(180.dp)
+                                .clip(RoundedCornerShape(16.dp)), contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(painter = painterResource(R.drawable.noimage), contentDescription = "playerphoto",
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).width(300.dp).height(180.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                        )
+                    }
+
+                    TextField(
+                        value = newTitleText,
+                        onValueChange = { newTitleText = it },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).focusRequester(focusRequester).onKeyEvent {
+                            if (it.key == Key.Enter) {
+                                keyboardController?.hide()
+                                true
+                            } else {
+                                false
+                            }
+                        },
+                        placeholder = {
+                            Text(context.getString(R.string.enter_title_new_recipe),
+                                color = colorResource(R.color.boloto)
+                            )
+                        },
+                        trailingIcon = {
+                            if (newTitleText.isNotEmpty()) {
+                                Icon(Icons.Default.Close,
+                                    contentDescription = "close",
+                                    tint = colorResource(R.color.boloto),
+                                    modifier = Modifier.clickable { newTitleText = "" }
+                                )
+                            }
+                        },
+                        shape = RoundedCornerShape(0.dp),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = colorResource(R.color.white),
+                            cursorColor = colorResource(R.color.boloto),
+                            unfocusedIndicatorColor = colorResource(R.color.boloto),
+                            focusedIndicatorColor = colorResource(R.color.boloto)
+                        ),
+                        textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 22.sp),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Go),
+                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
+                            keyboardController?.hide()
+                        })
+                    )
+                    TextField(
+                        value = newContentText,
+                        onValueChange = { newContentText = it },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).height(340.dp).focusRequester(focusRequester)
+                            .onKeyEvent {
+                                if (it.key == Key.Enter) {
+                                    keyboardController?.hide()
+                                    true
+                                } else {
+                                    false
+                                }
+                            },
+                        placeholder = {
+                            Text(
+                                context.getString(R.string.enter_content_new_recipe),
+                                color = colorResource(R.color.boloto)
+                            )
+                        },
+                        trailingIcon = {
+                            if (newContentText.isNotEmpty()) {
+                                Icon(Icons.Default.Close,
+                                    contentDescription = "close",
+                                    tint = colorResource(R.color.boloto),
+                                    modifier = Modifier.clickable { newContentText = "" }
+                                )
+                            }
+                        },
+                        shape = RoundedCornerShape(0.dp),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = colorResource(R.color.white),
+                            cursorColor = colorResource(R.color.boloto),
+                            unfocusedIndicatorColor = colorResource(R.color.boloto),
+                            focusedIndicatorColor = colorResource(R.color.boloto)
+                        ),
+                        textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 16.sp),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Go),
+                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
+                            keyboardController?.hide()
+                        })
+                    )
+                    Box(modifier = Modifier.size(140.dp).padding(top = 8.dp).clickable {
+                        if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
+                            val recipe = One(title = newTitleText, content = newContentText,
+                                images = selectedImageUri.toString() ?: R.drawable.noimage.toString(), videos = selectedRecipeVideo, id = selectedRecipeId)
+                            scope.launch { db.oneDao().upsert(recipe) }
+                            focusRequester.freeFocus()
+                            keyboardController?.hide()
+                            panelStateRight = PanelState.Hidden
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.enter_title_and_recipe), Toast.LENGTH_SHORT).show()
+                        }
+
+                    }, contentAlignment = Alignment.Center) {
+                        Image(painter = painterResource(R.drawable.disketa), contentDescription = "disketa",
+                            modifier = Modifier.fillMaxSize(), contentScale = ContentScale.FillBounds
+                        )
+                        Text(text = context.getString(R.string.save),
+                            fontSize = 15.sp, color = colorResource(R.color.red),
+                            fontWeight = FontWeight.Bold, fontFamily = FontFamily(Font(R.font.interregular)),
+                            modifier = Modifier.offset(y = 24.dp)
+                        )
                     }
                 }
             }
@@ -749,6 +1022,14 @@ enum class PanelState {
 fun parseLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
                      onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<OneLinks>,
                      setIsLoading: (Boolean) -> Unit) {
+    if (!isNetworkAvailable(context)) {
+        setIsLoading(false)
+        scope.launch(Dispatchers.Main) {
+            Toast.makeText(context,
+                context.getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show()
+        }
+        return
+    }
     setIsLoading(true)
     scope.launch(Dispatchers.IO) {
         var textLink = ""
@@ -768,7 +1049,6 @@ fun parseLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope
                 val html = response.body?.string()
                 if (html != null) {
                     val doc: Document = Jsoup.parse(html)
-                    // Извлекаем мета-теги
                     val metaTitle = doc.select("meta[property=og:title]").attr("content")
                     val metaDescription = doc.select("meta[property=og:description]").attr("content")
                     val metaImage = doc.select("meta[property=og:image]").attr("content")
@@ -802,7 +1082,7 @@ fun parseLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope
         } catch (e: Exception) {
             Log.e("LinkParsing", "Error parsing link: ${e.message}")
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Error parsing link11", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error parsing link", Toast.LENGTH_SHORT).show()
             }
         } finally {
             setIsLoading(false)
@@ -817,9 +1097,26 @@ fun parseLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope
             }
         } else {
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Error parsing link22", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error parsing link", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+}
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            else -> false
+        }
+    } else {
+        @Suppress("DEPRECATION")
+        val networkInfo = connectivityManager.activeNetworkInfo ?: return false
+        return networkInfo.isConnected
     }
 }
 

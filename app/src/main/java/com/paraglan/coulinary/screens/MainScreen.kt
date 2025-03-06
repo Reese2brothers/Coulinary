@@ -59,6 +59,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
@@ -253,7 +255,6 @@ fun MainScreen(navController: NavController){
                         focusedIndicatorColor = Color.Transparent
                     ),
                     textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 24.sp),
-                    singleLine = true,
                     keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
                         keyboardController?.hide()
@@ -403,9 +404,14 @@ fun MainScreen(navController: NavController){
             }
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
-            Column(modifier = Modifier.fillMaxHeight().width(panelWidth).offset(x = animatedOffset).background(
-                    colorResource(R.color.trboloto), shape = CutCornerShape(topStart = 16.dp, bottomStart = 16.dp)
-                ), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(modifier = Modifier.fillMaxHeight().width(panelWidth).offset(x = animatedOffset)
+                .background( brush = Brush.linearGradient(
+                    colors = listOf(colorResource(R.color.trboloto), colorResource(R.color.white)),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                ),
+                    shape = CutCornerShape(topStart = 16.dp, bottomStart = 16.dp)),
+                horizontalAlignment = Alignment.CenterHorizontally) {
                  Column(modifier = Modifier.fillMaxWidth(),
                      horizontalAlignment = Alignment.CenterHorizontally,
                      verticalArrangement = Arrangement.SpaceEvenly){
@@ -504,8 +510,12 @@ fun MainScreen(navController: NavController){
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Column(modifier = Modifier.fillMaxHeight().width(panelWidthLeft).offset(x = -animatedOffsetLeft)
-                .background(colorResource(R.color.trboloto), shape = CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
-                ), horizontalAlignment = Alignment.CenterHorizontally) {
+                .background(brush = Brush.linearGradient(
+                        colors = listOf(colorResource(R.color.white), colorResource(R.color.trboloto)),
+                        start = Offset(0f, Float.POSITIVE_INFINITY),
+                        end = Offset(Float.POSITIVE_INFINITY, 0f)
+                    ), shape = CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)),
+                horizontalAlignment = Alignment.CenterHorizontally) {
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceEvenly) {
                     Row(modifier = Modifier.fillMaxWidth().padding(end = 24.dp, top = 16.dp),

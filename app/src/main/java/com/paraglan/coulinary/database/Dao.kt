@@ -57,6 +57,7 @@ interface FavouritesDao {
     @Query("SELECT COUNT(*) FROM favourites")
     suspend fun getCount(): Int
 }
+
 @Dao
 interface OneDao {
     @Query("SELECT * FROM one")
@@ -65,8 +66,11 @@ interface OneDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertOne(one: One)
 
+    @Upsert
+    suspend fun upsert(one : One)
+
     @Delete
-    suspend fun deleteOne(one: One)
+    suspend fun delete(one: One)
 
     @Query("DELETE FROM one")
     suspend fun deleteAll()
