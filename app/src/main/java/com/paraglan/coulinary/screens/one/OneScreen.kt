@@ -78,6 +78,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.isEmpty
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -106,6 +107,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
+import androidx.navigation.NavController
 import androidx.room.Room
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
@@ -127,14 +129,15 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.io.File
 import java.net.URL
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.exists
 
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun OneScreen() {
+fun OneScreen(navController: NavController) {
     var isSearchIconClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current as Activity
     val scope = rememberCoroutineScope()
@@ -153,7 +156,7 @@ fun OneScreen() {
     var isLoading by remember { mutableStateOf(false) }
     var isFirstLaunch by remember { mutableStateOf(true) }
     var selectedRecipeId by remember { mutableStateOf<Int>(0) }
-    var selectedRecipeVideo by remember { mutableStateOf("") }
+    var selectedRecipeVideo by remember { mutableStateOf<Uri?>(null) }
 
     val itemsFlow: Flow<List<OneLinks>> = db.oneLinksDao().getAll()
     val onelistFlow: Flow<List<One>> = db.oneDao().getAll()
@@ -292,7 +295,7 @@ fun OneScreen() {
                         selectedImageUri = null
                         newTitleText = ""
                         newContentText = ""
-                        selectedRecipeVideo = ""
+                        selectedRecipeVideo = null
                         selectedRecipeId = 0
                         panelStateRight = PanelState.Expanded
                     }, tint = colorResource(R.color.yellow)
@@ -300,13 +303,16 @@ fun OneScreen() {
             }
             LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp, bottom = 4.dp)) {
                 itemsIndexed(filteredList) {index, item ->
+                    Log.d("TAG", "OneScreen item.image1: ${item.images}")
                     Card(modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
-                        .fillMaxWidth().height(120.dp).background(Color.Transparent),
+                        .fillMaxWidth().height(120.dp).background(Color.Transparent).clickable {
+                            val encodedImageUri = URLEncoder.encode(item.images, StandardCharsets.UTF_8.toString())
+                            val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
+                            navController.navigate("OneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                        },
                         shape = CutCornerShape(bottomStart = 8.dp),
                         border = BorderStroke(1.dp, color = colorResource(id = R.color.boloto)),
-                        onClick = {
-
-                        }){
+                        ){
                         Row(modifier = Modifier.fillMaxSize().background(colorResource(R.color.white)),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center){
@@ -318,14 +324,14 @@ fun OneScreen() {
                                         ?.trim()
                                         ?: item.images.split(",").firstOrNull()?.trim()
                                     val imageModel = if (firstImageUri.isNullOrEmpty()
-                                        || firstImageUri == R.drawable.baseline_add_photo_alternate_24.toString()) {
-                                        R.drawable.baseline_add_photo_alternate_24
+                                        || firstImageUri == R.drawable.noimage.toString()) {
+                                        R.drawable.noimage
                                     } else {
                                         firstImageUri
                                     }
                                     AsyncImage(model = ImageRequest.Builder(context).data(imageModel)
                                             .crossfade(true).build(),
-                                        contentDescription = "choise_image",
+                                        contentDescription = "choice_image",
                                         modifier = Modifier.fillMaxHeight().width(150.dp).fillMaxHeight(),
                                         contentScale = ContentScale.Crop
                                     )
@@ -383,7 +389,7 @@ fun OneScreen() {
                                                 newTitleText = selectedEditItemRecipe!!.title ?: ""
                                                 newContentText = selectedEditItemRecipe!!.content ?: ""
                                                 selectedImageUri = selectedEditItemRecipe!!.images.toUri()
-                                                selectedRecipeVideo = selectedEditItemRecipe!!.videos
+                                                selectedRecipeVideo = selectedEditItemRecipe!!.videos.toUri()
                                                 selectedRecipeId = selectedEditItemRecipe!!.id
                                                 focusRequester.freeFocus()
                                                 keyboardController?.hide()
@@ -871,8 +877,10 @@ fun OneScreen() {
                             contentDescription = "saveicon",
                             modifier = Modifier.size(35.dp).clickable {
                                 if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
+                                    val imageToSave = selectedImageUri?.toString() ?: R.drawable.noimage.toString()
+                                    val videoToSave = selectedRecipeVideo?.toString() ?: "video"
                                     val recipe = One(title = newTitleText, content = newContentText,
-                                        images = selectedImageUri.toString() ?: R.drawable.noimage.toString(), videos = selectedRecipeVideo, id = selectedRecipeId)
+                                        images = imageToSave, videos = videoToSave, id = selectedRecipeId)
                                     scope.launch { db.oneDao().upsert(recipe) }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
