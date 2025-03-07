@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -269,7 +270,7 @@ fun MainScreen(navController: NavController){
                                  }, contentScale = ContentScale.FillBounds
                          )
             }
-            LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f), state = rememberLazyListState()) {
                 itemsIndexed(filteredList) {index, item ->
                     Card(modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
                         .fillMaxWidth().height(150.dp).background(Color.Transparent), shape = CutCornerShape(bottomStart = 8.dp),

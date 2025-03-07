@@ -866,29 +866,41 @@ fun OneScreen() {
                         }, tint = colorResource(R.color.white)
                     )
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.width(160.dp).padding(end = 4.dp)) {
-                        Image(painter = painterResource(R.drawable.cameraicon),
+                        modifier = Modifier.width(200.dp).padding(end = 4.dp)) {
+                        Image(painter = painterResource(R.drawable.baseline_save_24),
+                            contentDescription = "saveicon",
+                            modifier = Modifier.size(35.dp).clickable {
+                                if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
+                                    val recipe = One(title = newTitleText, content = newContentText,
+                                        images = selectedImageUri.toString() ?: R.drawable.noimage.toString(), videos = selectedRecipeVideo, id = selectedRecipeId)
+                                    scope.launch { db.oneDao().upsert(recipe) }
+                                    focusRequester.freeFocus()
+                                    keyboardController?.hide()
+                                    panelStateRight = PanelState.Hidden
+                                } else {
+                                    Toast.makeText(context, context.getString(R.string.enter_title_and_recipe), Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        )
+                        Image(painter = painterResource(R.drawable.baseline_add_a_photo_24),
                             contentDescription = "cameraicon",
                             modifier = Modifier.size(30.dp).clickable {
                                 launchCamera()
                             }
                         )
-                        Image(painter = painterResource(R.drawable.galleryicon),
-                            contentDescription = "galleryicon",
-                            modifier = Modifier.size(30.dp).clickable {
-                                launchPhotoPicker()
-                            }
+                        Image(painter = painterResource(R.drawable.baseline_add_photo_alternate_24), contentDescription = "galleryicon",
+                            modifier = Modifier.size(35.dp).clickable { launchPhotoPicker() }
                         )
-                        Image(painter = painterResource(R.drawable.delete),
-                            contentDescription = "deletephoto",
+                        Icon(painter = painterResource(R.drawable.delete), contentDescription = "deletephoto",
                             modifier = Modifier.size(25.dp).clickable {
                                 selectedImageUri = null
                                 bitmap = null
-                            }
+                            }, tint = Color.White
                         )
                     }
                 }
-                Column(modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 8.dp).verticalScroll(rememberScrollState()),
+                Column(modifier = Modifier.fillMaxWidth().height(700.dp)
+                    .imePadding().padding(top = 8.dp).verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally){
                     if (bitmap != null && !bitmap!!.isRecycled) {
                         Image(bitmap = bitmap!!.asImageBitmap(), contentDescription = "playerphoto",
@@ -904,16 +916,16 @@ fun OneScreen() {
                                 .clip(RoundedCornerShape(16.dp)), contentScale = ContentScale.Crop
                         )
                     } else {
-                        Image(painter = painterResource(R.drawable.noimage), contentDescription = "playerphoto",
-                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).width(300.dp).height(180.dp)
-                                .clip(RoundedCornerShape(16.dp))
+                        Icon(painter = painterResource(R.drawable.noimage), contentDescription = "playerphoto",
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).width(200.dp).height(100.dp)
+                                .clip(RoundedCornerShape(16.dp)), tint = Color.White
                         )
                     }
 
                     TextField(
                         value = newTitleText,
                         onValueChange = { newTitleText = it },
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).focusRequester(focusRequester).onKeyEvent {
+                        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester).onKeyEvent {
                             if (it.key == Key.Enter) {
                                 keyboardController?.hide()
                                 true
@@ -922,16 +934,12 @@ fun OneScreen() {
                             }
                         },
                         placeholder = {
-                            Text(context.getString(R.string.enter_title_new_recipe),
-                                color = colorResource(R.color.boloto)
-                            )
+                            Text(context.getString(R.string.enter_title_new_recipe), color = colorResource(R.color.boloto))
                         },
                         trailingIcon = {
                             if (newTitleText.isNotEmpty()) {
-                                Icon(Icons.Default.Close,
-                                    contentDescription = "close",
-                                    tint = colorResource(R.color.boloto),
-                                    modifier = Modifier.clickable { newTitleText = "" }
+                                Icon(Icons.Default.Close, contentDescription = "close",
+                                    tint = colorResource(R.color.boloto), modifier = Modifier.clickable { newTitleText = "" }
                                 )
                             }
                         },
@@ -943,15 +951,16 @@ fun OneScreen() {
                             focusedIndicatorColor = colorResource(R.color.boloto)
                         ),
                         textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 22.sp),
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Go),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Default),
                         keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
                             keyboardController?.hide()
-                        })
+                        }),
+                        singleLine = false
                     )
                     TextField(
                         value = newContentText,
                         onValueChange = { newContentText = it },
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).height(340.dp).focusRequester(focusRequester)
+                        modifier = Modifier.fillMaxWidth().weight(1f).focusRequester(focusRequester)
                             .onKeyEvent {
                                 if (it.key == Key.Enter) {
                                     keyboardController?.hide()
@@ -961,17 +970,11 @@ fun OneScreen() {
                                 }
                             },
                         placeholder = {
-                            Text(
-                                context.getString(R.string.enter_content_new_recipe),
-                                color = colorResource(R.color.boloto)
-                            )
+                            Text(context.getString(R.string.enter_content_new_recipe), color = colorResource(R.color.boloto))
                         },
-                        trailingIcon = {
-                            if (newContentText.isNotEmpty()) {
-                                Icon(Icons.Default.Close,
-                                    contentDescription = "close",
-                                    tint = colorResource(R.color.boloto),
-                                    modifier = Modifier.clickable { newContentText = "" }
+                        trailingIcon = { if (newContentText.isNotEmpty()) {
+                                Icon(Icons.Default.Close, contentDescription = "close",
+                                    tint = colorResource(R.color.boloto), modifier = Modifier.clickable { newContentText = "" }
                                 )
                             }
                         },
@@ -983,33 +986,12 @@ fun OneScreen() {
                             focusedIndicatorColor = colorResource(R.color.boloto)
                         ),
                         textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 16.sp),
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Go),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Default),
                         keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
                             keyboardController?.hide()
-                        })
+                        }),
+                        singleLine = false
                     )
-                    Box(modifier = Modifier.size(140.dp).padding(top = 8.dp).clickable {
-                        if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
-                            val recipe = One(title = newTitleText, content = newContentText,
-                                images = selectedImageUri.toString() ?: R.drawable.noimage.toString(), videos = selectedRecipeVideo, id = selectedRecipeId)
-                            scope.launch { db.oneDao().upsert(recipe) }
-                            focusRequester.freeFocus()
-                            keyboardController?.hide()
-                            panelStateRight = PanelState.Hidden
-                        } else {
-                            Toast.makeText(context, context.getString(R.string.enter_title_and_recipe), Toast.LENGTH_SHORT).show()
-                        }
-
-                    }, contentAlignment = Alignment.Center) {
-                        Image(painter = painterResource(R.drawable.disketa), contentDescription = "disketa",
-                            modifier = Modifier.fillMaxSize(), contentScale = ContentScale.FillBounds
-                        )
-                        Text(text = context.getString(R.string.save),
-                            fontSize = 15.sp, color = colorResource(R.color.red),
-                            fontWeight = FontWeight.Bold, fontFamily = FontFamily(Font(R.font.interregular)),
-                            modifier = Modifier.offset(y = 24.dp)
-                        )
-                    }
                 }
             }
         }
