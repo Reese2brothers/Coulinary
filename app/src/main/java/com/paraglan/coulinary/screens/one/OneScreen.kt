@@ -306,9 +306,16 @@ fun OneScreen(navController: NavController) {
                     Log.d("TAG", "OneScreen item.image1: ${item.images}")
                     Card(modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
                         .fillMaxWidth().height(120.dp).background(Color.Transparent).clickable {
-                            val encodedImageUri = URLEncoder.encode(item.images, StandardCharsets.UTF_8.toString())
-                            val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                            navController.navigate("OneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                            if(item.images.isEmpty()){
+                                val encodedImageUri = R.drawable.noimage.toString()
+                                val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
+                                navController.navigate("OneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                            } else {
+                                val encodedImageUri = URLEncoder.encode(item.images, StandardCharsets.UTF_8.toString())
+                                val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
+                                navController.navigate("OneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                            }
+
                         },
                         shape = CutCornerShape(bottomStart = 8.dp),
                         border = BorderStroke(1.dp, color = colorResource(id = R.color.boloto)),

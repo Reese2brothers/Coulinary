@@ -1,6 +1,7 @@
 package com.paraglan.coulinary.screens
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
@@ -24,6 +25,8 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
+import java.util.UUID
+import kotlin.text.clear
 import kotlin.text.format
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -44,10 +47,8 @@ fun ImagePicker(
             Log.d("ImagePicker", "currentUri: $currentUri")
             currentUri?.let { uri ->
                 try {
-                    // Получаем Bitmap из Uri
                     val btm = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
                     Log.d("ImagePicker", "bitmap: $btm")
-                    // Передаем Bitmap в onBitmapSelected
                     onBitmapSelected(btm)
                     Log.d("ImagePicker", "onBitmapSelected called")
                 } catch (e: Exception) {
@@ -102,7 +103,6 @@ fun ImagePicker(
         currentUri = uri
         cameraLauncher.launch(uri)
     }
-
     fun launchPhotoPicker() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             photoPickerLauncher.launch(
@@ -116,7 +116,6 @@ fun ImagePicker(
     }
     onLaunchCamera { launchCamera() }
     onLaunchPhotoPicker { launchPhotoPicker() }
-
 }
 fun saveImageToFile(context: Context, uri: Uri): Uri? {
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.US).format(java.util.Date())
@@ -141,22 +140,36 @@ fun saveImageToFile(context: Context, uri: Uri): Uri? {
         return null
     }
 }
-//fun saveImageToFile(context: Context, uri: Uri): Uri? {
-//    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.US).format(java.util.Date())
-//    val storageDir: File = context.getExternalFilesDir(null)!!
-//    val imageFile = File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir)
-//
-//    try {
-//        val inputStream = context.contentResolver.openInputStream(uri)
-//        val outputStream = FileOutputStream(imageFile)
-//        inputStream?.use { input ->
-//            outputStream.use { output ->
-//                input.copyTo(output)
-//            }
-//        }
-//        return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", imageFile)
-//    } catch (e: Exception) {
-//        e.printStackTrace()
-//    }
-//    return null
-//}
+fun saveImageToFile2(context: Context, bitmap: Bitmap): Uri? {
+    val filename = "JPEG_${SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())}_${UUID.randomUUID()}.jpg"
+    val imageCollection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+    } else {
+        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    }
+    val contentValues = ContentValues().apply {
+        put(MediaStore.Images.Media.DISPLAY_NAME, filename)
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            put(MediaStore.Images.Media.IS_PENDING, 1)
+        }
+    }
+    val contentResolver = context.contentResolver
+    val imageUri = contentResolver.insert(imageCollection, contentValues)
+    return try {
+        imageUri?.let {
+            contentResolver.openOutputStream(it)?.use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                contentValues.clear()
+                contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
+                contentResolver.update(it, contentValues, null, null)
+            }
+            it
+        }
+    } catch (e: Exception) {
+        imageUri?.let { contentResolver.delete(it, null, null) }
+        null
+    }
+}
