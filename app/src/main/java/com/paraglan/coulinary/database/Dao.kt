@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
@@ -113,4 +114,7 @@ interface OneDao {
 
     @Query("UPDATE one SET images = '' WHERE title = :title")
     suspend fun clearImages(title: String)
+
+    @Query("SELECT * FROM one WHERE id = :id")
+    fun getOneById(id: Int): One
 }

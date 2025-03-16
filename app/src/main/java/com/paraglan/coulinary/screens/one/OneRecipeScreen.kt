@@ -1,9 +1,21 @@
 package com.paraglan.coulinary.screens.one
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.pdf.PdfDocument
 import android.net.Uri
+import android.os.Environment
+import android.text.Layout
+import android.text.StaticLayout
+import android.text.TextPaint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -14,6 +26,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,8 +42,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,39 +63,57 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+//import androidx.compose.ui.text.font.Typeface
+import android.graphics.Typeface
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import androidx.room.Room
 import coil.compose.AsyncImage
 import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
+import com.paraglan.coulinary.database.Favourites
+import com.paraglan.coulinary.database.One
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.saveImageToFile2
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun OneRecipeScreen(navController: NavController, title: String, content: String, image: String, videos: String, id: Int) {
+    val decTitle = URLDecoder.decode(title, StandardCharsets.UTF_8.toString())
+    val decContent = URLDecoder.decode(content, StandardCharsets.UTF_8.toString())
     var panelState by remember { mutableStateOf(PanelState.Hidden) }
     var isPressed by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "database").build() }
-    var selectedBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var showImagePicker by remember { mutableStateOf(false) }
     var launchCamera: () -> Unit = {}
     var launchPhotoPicker: () -> Unit = {}
@@ -82,13 +121,186 @@ fun OneRecipeScreen(navController: NavController, title: String, content: String
     var selectedImage by remember { mutableStateOf("") }
     var isCamera by remember { mutableStateOf(false) }
     var isGallery by remember { mutableStateOf(false) }
-    LaunchedEffect(listsImage) {
-        val imagesString = db.oneDao().getImagesByTitle(title)
-        if (imagesString.isNotEmpty()) {
-            val imagesList = imagesString.split(",").map { it.trim() }
-            listsImage.addAll(imagesList)
-            selectedImage = listsImage[0]
-            Log.d("TAG", "OneRecipeScreen: $listsImage")
+    val showDialogDeleteAll = remember { mutableStateOf(false) }
+    val showDialogEditRecipe = remember { mutableStateOf(false) }
+    val showDialogPdf = remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var text by remember { mutableStateOf(decTitle) }
+    var text2 by remember { mutableStateOf(decContent) }
+    val field1 = remember { mutableStateOf("") }
+    var tints by remember { mutableStateOf(false) }
+
+    fun createPdf(context: Context, title: String, text: String, filename: String, listsImage: List<String>) {
+        scope.launch(Dispatchers.IO) {
+            val pdfDocument = PdfDocument()
+            val paint = TextPaint()
+            paint.color = android.graphics.Color.BLACK
+            paint.textSize = 12f
+
+            val titlePaint = TextPaint()
+            titlePaint.color = android.graphics.Color.BLACK
+            titlePaint.textSize = 20f
+            titlePaint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+
+            val pageWidth = 300
+            val pageHeight = 1200
+            val marginHorizontal = 10
+            val marginVertical = 20
+            val textWidth = pageWidth - 2 * marginHorizontal
+            val lineSpacing = 12f // Уменьшил lineSpacing
+
+            Log.d("TAG", "listsImage.size: ${listsImage.size}")
+            if (listsImage.isNotEmpty()) {
+                Log.d("TAG", "listsImage[0]: ${listsImage[0]}")
+            }
+
+            // Загрузка изображения
+            val bitmap = try {
+                if (listsImage.isNotEmpty()) {
+                    val decodedImage = URLDecoder.decode(listsImage[0], "UTF-8")
+                    val uri = Uri.parse(decodedImage)
+                    val inputStream = context.contentResolver.openInputStream(uri)
+                    BitmapFactory.decodeStream(inputStream)
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("TAG", "Error loading image", e)
+                null
+            }
+
+            if (bitmap == null) {
+                Log.e("TAG", "Bitmap is null")
+            }
+
+            // Вычисление высоты изображения
+            val imageHeight = bitmap?.height ?: 0
+            val imageWidth = bitmap?.width ?: 0
+            val scale = if (imageWidth > textWidth) textWidth.toFloat() / imageWidth else 1f
+            val scaledImageHeight = (imageHeight * scale).toInt()
+
+            // Вычисление высоты заголовка
+            val titleLayout = StaticLayout.Builder.obtain(
+                title, 0, title.length, titlePaint, textWidth
+            ).setAlignment(Layout.Alignment.ALIGN_NORMAL).setLineSpacing(1.0f, 0.0f).build()
+            val titleHeight = titleLayout.height
+
+            // Вычисление высоты текста
+            val staticLayoutBuilder = StaticLayout.Builder.obtain(
+                text, 0, text.length, paint, textWidth
+            ).setAlignment(Layout.Alignment.ALIGN_NORMAL).setLineSpacing(1.0f, 0.0f)
+            val textLayout = staticLayoutBuilder.build()
+            val textHeight = textLayout.height
+
+            var currentY = 0f
+            var currentLine = 0
+            //val lineSpacing = 18f
+
+            while (currentLine < textLayout.lineCount) {
+                val pageInfo = PdfDocument.PageInfo.Builder(
+                    pageWidth,
+                    pageHeight,
+                    pdfDocument.pages.size + 1
+                ).create()
+                val page = pdfDocument.startPage(pageInfo)
+                val canvas = page.canvas
+                canvas.save()
+                canvas.translate(marginHorizontal.toFloat(), marginVertical.toFloat())
+                Log.d("TAG", "currentY: $currentY")
+                Log.d("TAG", "scaledImageHeight: $scaledImageHeight")
+                Log.d("TAG", "titleHeight: $titleHeight")
+                Log.d("TAG", "pageHeight: $pageHeight")
+                Log.d("TAG", "marginVertical: $marginVertical")
+                Log.d("TAG", "lineSpacing: $lineSpacing")
+
+                // Рисование изображения
+                if (bitmap != null && pdfDocument.pages.size == 1) {
+                    val scaledBitmap = Bitmap.createScaledBitmap(bitmap, (imageWidth * scale).toInt(), scaledImageHeight, false)
+                    canvas.drawBitmap(scaledBitmap, 0f, currentY, paint)
+                    currentY += scaledImageHeight + lineSpacing
+                }
+
+                // Рисование заголовка
+                if (pdfDocument.pages.size == 1) {
+                    titleLayout.draw(canvas)
+                    currentY += titleHeight + lineSpacing
+                }
+
+                var lineDrawnOnPage = 0
+                while (currentLine < textLayout.lineCount) {
+                    val lineTop = textLayout.getLineTop(currentLine)
+                    if (currentLine + 1 < textLayout.lineCount) {
+                        if (currentY + lineSpacing > pageHeight - marginVertical * 2) {
+                            canvas.restore()
+                            pdfDocument.finishPage(page)
+                            currentY = 0f
+                            lineDrawnOnPage = 0
+                            break
+                        }
+                    }
+                    val lineStart = textLayout.getLineStart(currentLine)
+                    val lineEnd = textLayout.getLineEnd(currentLine)
+                    val lineText = text.substring(lineStart, lineEnd)
+                    canvas.drawText(lineText, 0f, currentY + textLayout.getLineBaseline(currentLine)
+                        .toFloat() - lineTop, paint)
+                    currentY += lineSpacing
+                    currentLine++
+                    lineDrawnOnPage++
+                }
+                if (lineDrawnOnPage > 0) {
+                    canvas.restore()
+                    pdfDocument.finishPage(page)
+                }
+            }
+            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val file = File(downloadsDir, "$filename.pdf")
+            try {
+                if (!file.exists()) {
+                    file.createNewFile()
+                }
+                if (downloadsDir.exists() && downloadsDir.canWrite()) {
+                    pdfDocument.writeTo(FileOutputStream(file))
+                    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.setDataAndType(uri, "application/pdf")
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+                    context.startActivity(intent)
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, context.getString(R.string.downloads_directory_not_accessible), Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("TAG", "Error saving PDF", e)
+            } finally {
+                pdfDocument.close()
+            }
+        }
+    }
+    fun saveTextAsPdf(context: Context, text: String, text2: String, filename: String, listsImage: List<String>) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+        } else {
+            createPdf(context, text, text2, filename, listsImage)
+            Toast.makeText(context, context.getString(R.string.file_pdf_is_created), Toast.LENGTH_LONG).show()
+        }
+    }
+    LaunchedEffect(key1 = text) {
+        tints = db.favouritesDao().isFavourite(text, "OneRecipeScreen")
+    }
+    LaunchedEffect(key1 = listsImage) {
+        withContext(Dispatchers.IO) {
+            val imagesString = db.oneDao().getImagesByTitle(title) ?: ""
+            if (imagesString.isNotEmpty()) {
+                val imagesList = imagesString.split(",").map { it.trim() }
+                listsImage.addAll(imagesList)
+                if (listsImage.isNotEmpty()){
+                    selectedImage = listsImage[0]
+                }
+                Log.d("TAG", "OneRecipeScreen: $listsImage")
+            }
         }
     }
     LaunchedEffect(isCamera) {
@@ -204,29 +416,218 @@ fun OneRecipeScreen(navController: NavController, title: String, content: String
                 Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).padding(top = 270.dp, bottom = 16.dp), horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically){
                     Image(painter = painterResource(R.drawable.edit), contentDescription = "edit",
-                        modifier = Modifier.size(30.dp).clickable {  }
+                        modifier = Modifier.size(30.dp).clickable {
+                            showDialogEditRecipe.value = true
+                        }
                     )
-                    Image (painter = painterResource(R.drawable.baseline_favorite_border_24), contentDescription = "favourite",
-                        modifier = Modifier.size(30.dp).clickable { }
+                    if (showDialogEditRecipe.value) {
+                        AlertDialog(onDismissRequest = { showDialogEditRecipe.value = false },
+                            containerColor = colorResource(id = R.color.white),
+                            title = { androidx.compose.material.Text(
+                                stringResource(R.string.confirm),
+                                color = colorResource(id = R.color.boloto),
+                                fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            },
+                            text = {
+                                Column(modifier = Modifier.fillMaxWidth().weight(1f), horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.SpaceEvenly){
+                                    OutlinedTextField(value = text,
+                                        onValueChange = { text = it },
+                                        placeholder = {
+                                            Text(stringResource(R.string.enter_title_new_recipe), color = colorResource(R.color.boloto))
+                                        },
+                                        trailingIcon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "clear",
+                                            modifier = Modifier.size(20.dp).clickable { text = "" }, tint = colorResource(R.color.boloto)
+                                        ) },
+                                        textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 20.sp),
+                                        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp)
+                                            .border(3.dp, colorResource(R.color.boloto), RoundedCornerShape(8.dp)),
+                                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                                            focusedBorderColor = colorResource(R.color.boloto),
+                                            unfocusedBorderColor = colorResource(R.color.boloto),
+                                            cursorColor = colorResource(R.color.boloto),
+                                            focusedPlaceholderColor = colorResource(R.color.boloto),
+                                            focusedTextColor = colorResource(R.color.boloto)),
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    OutlinedTextField(value = text2,
+                                        onValueChange = { text2 = it },
+                                        placeholder = {
+                                            Text(stringResource(R.string.enter_content_new_recipe), color = colorResource(R.color.boloto))
+                                        },
+                                        trailingIcon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "clear",
+                                            modifier = Modifier.size(20.dp).clickable { text2 = "" }, tint = colorResource(R.color.boloto)
+                                        ) },
+                                        textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 20.sp),
+                                        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp)
+                                            .border(3.dp, colorResource(R.color.boloto), RoundedCornerShape(8.dp)),
+                                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                                            focusedBorderColor = colorResource(R.color.boloto),
+                                            unfocusedBorderColor = colorResource(R.color.boloto),
+                                            cursorColor = colorResource(R.color.boloto),
+                                            focusedPlaceholderColor = colorResource(R.color.boloto),
+                                            focusedTextColor = colorResource(R.color.boloto)),
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                }
+                            },
+                            confirmButton = {
+                                Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = colorResource(id = R.color.boloto)), onClick = {
+                                    scope.launch {db.oneDao().upsert(One(title = text, content = text2,
+                                        images = listsImage.joinToString(","), videos = videos, id = id))
+                                    }
+                                    showDialogEditRecipe.value = false
+                                }) {
+                                    androidx.compose.material.Text(
+                                        stringResource(R.string.yes), color = colorResource(id = R.color.white),
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            },
+                            dismissButton = {
+                                Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = colorResource(id = R.color.boloto)),
+                                    onClick = { showDialogEditRecipe.value = false
+                                    }) {
+                                    androidx.compose.material.Text(stringResource(R.string.cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
+                                }
+                            })
+                    }
+
+                    Image (painter = painterResource(if(!tints) R.drawable.baseline_favorite_border_24 else R.drawable.baseline_favorite_24), contentDescription = "favourite",
+                        modifier = Modifier.size(30.dp).clickable {
+                            scope.launch {
+                                if (tints) {
+                                    db.favouritesDao().deleteFavourite(text, "OneRecipeScreen")
+                                } else {
+                                    db.favouritesDao().insertFavourites(
+                                            Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "OneRecipeScreen")
+                                    )
+                                }
+                                tints = !tints
+                            }
+                        }
                     )
                     Image (painter = painterResource(R.drawable.share), contentDescription = "share",
-                        modifier = Modifier.size(30.dp).clickable { }
+                        modifier = Modifier.size(30.dp).clickable {
+                            val maxLength = 1000
+                            val firstImageUri = if (listsImage.isNotEmpty()) listsImage[0] else null
+                            val textt = "Recepie: $text\n\nContent: $text2"
+                            if (textt.length > maxLength) {
+                                scope.launch {
+                                    val parts = textt.chunked(maxLength)
+                                    var inten: Intent? = null
+                                    for (i in parts.indices.reversed()) {
+                                        if (i == 0 && firstImageUri != null) {
+                                            inten = Intent().apply {
+                                                action = Intent.ACTION_SEND
+                                                putExtra(Intent.EXTRA_TEXT, parts[i])
+                                                type = "text/plain"
+                                                putExtra(Intent.EXTRA_STREAM, Uri.parse(firstImageUri))
+                                                type = "*/*"
+                                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                            }
+                                            context.startActivity(Intent.createChooser(inten, context.getString(R.string.onerec_share_recepie_via)))
+                                        } else {
+                                            delay(1000)
+                                            val nextShareIntent = Intent().apply { action = Intent.ACTION_SEND
+                                                    putExtra(Intent.EXTRA_TEXT, parts[i])
+                                                    type = "text/plain"
+                                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                    inten?.component?.let { component ->
+                                                        this.component = component
+                                                    }
+                                                }
+                                            context.startActivity(Intent.createChooser(nextShareIntent, context.getString(R.string.onerec_share_recepie_via)))
+                                        }
+                                    }
+                                }
+                            } else {
+                                val shareIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, text)
+                                    type = "text/plain"
+                                    if (firstImageUri != null) {
+                                        putExtra(
+                                            Intent.EXTRA_STREAM,
+                                            Uri.parse(firstImageUri)
+                                        )
+                                        type = "*/*"
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                }
+                                context.startActivity(
+                                    Intent.createChooser(
+                                        shareIntent,
+                                        context.getString(R.string.onerec_share_recepie_via)
+                                    )
+                                )
+                            }
+                        }
                     )
                     Image (painter = painterResource(R.drawable.baseline_picture_as_pdf_24), contentDescription = "pdf",
-                        modifier = Modifier.size(30.dp).clickable { }
+                        modifier = Modifier.size(30.dp).clickable {
+                            showDialogPdf.value = true
+                        }
                     )
+                    if (showDialogPdf.value) {
+                        AlertDialog(
+                            onDismissRequest = { showDialogPdf.value = false },
+                            containerColor = colorResource(id = R.color.white),
+                            title = { Text(text = stringResource(R.string.enter_file_name), color = colorResource(id = R.color.boloto),
+                                fontSize = 20.sp, fontWeight = FontWeight.Bold) },
+                            text = {
+                                Column {
+                                    OutlinedTextField(
+                                        value = field1.value,
+                                        placeholder = { Text(stringResource(R.string.placeholder_enter_file_name), color = colorResource(id = R.color.boloto), fontSize = 14.sp) },
+                                        trailingIcon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "clear",
+                                            modifier = Modifier.clickable { field1.value = ""},
+                                            tint = colorResource(id = R.color.boloto)) },
+                                        onValueChange = { field1.value = it },
+                                        modifier = Modifier.padding(top = 8.dp),
+                                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                                            focusedTextColor = colorResource(R.color.boloto),
+                                            focusedBorderColor = colorResource(id = R.color.boloto),
+                                            unfocusedBorderColor = colorResource(id = R.color.boloto),
+                                            cursorColor = colorResource(id = R.color.boloto)
+                                        )
+                                    )
+                                }
+                            },
+                            confirmButton = {
+                                Button(colors = ButtonDefaults.buttonColors(
+                                    containerColor = colorResource(id = R.color.boloto)),
+                                    onClick = {
+                                        val filename = field1.value
+                                        saveTextAsPdf(context, text, text2, filename, listsImage.toList())
+                                        showDialogPdf.value = false
+                                    }) { Text(stringResource(R.string.save), color = colorResource(id = R.color.white), fontSize = 16.sp)
+                                }
+                            },
+                            dismissButton = { Button(colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(id = R.color.boloto)
+                            ),
+                                onClick = { showDialogPdf.value = false }) {
+                                Text(stringResource(R.string.cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
+                            }
+                            })
+                    }
                     Image (painter = painterResource(R.drawable.baseline_photo_size_select_actual_24), contentDescription = "photo",
-                        modifier = Modifier.size(30.dp).clickable { }
+                        modifier = Modifier.size(30.dp).clickable { panelState = PanelState.Expanded
+                        isPressed = true}
                     )
                     Image (painter = painterResource(R.drawable.baseline_ondemand_video_24), contentDescription = "video",
                         modifier = Modifier.size(30.dp).clickable { }
                     )
                 }
-                Text(text = title, fontSize = 22.sp, color = colorResource(R.color.boloto),
+                Text(text = text, fontSize = 22.sp, color = colorResource(R.color.boloto),
                     fontWeight = FontWeight.Bold, fontFamily = FontFamily(Font(R.font.interregular)),
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
-                Text(text = content, fontSize = 16.sp, color = colorResource(R.color.boloto),
+                Text(text = text2, fontSize = 16.sp, color = colorResource(R.color.boloto),
                     fontFamily = FontFamily(Font(R.font.interregular)),
                     modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 8.dp, vertical = 8.dp)
                     .verticalScroll(rememberScrollState())
@@ -276,11 +677,46 @@ fun OneRecipeScreen(navController: NavController, title: String, content: String
                     )
                     Icon(painter = painterResource(R.drawable.delete), contentDescription = "deleteall",
                         modifier = Modifier.size(25.dp).offset(x = 48.dp).clickable {
-                            deleteAllImages()
+                            showDialogDeleteAll.value = true
                         }, tint = colorResource(R.color.white)
                     )
+                    if (showDialogDeleteAll.value) {
+                        AlertDialog(onDismissRequest = { showDialogDeleteAll.value = false },
+                            containerColor = colorResource(id = R.color.white),
+                            title = { androidx.compose.material.Text(
+                                stringResource(R.string.confirm),
+                                color = colorResource(id = R.color.boloto),
+                                fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            },
+                            text = { androidx.compose.material.Text(
+                                stringResource(R.string.delete_all_photos),
+                                color = colorResource(id = R.color.boloto))
+                            },
+                            confirmButton = {
+                                Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = colorResource(id = R.color.boloto)), onClick = {
+                                    deleteAllImages()
+//                                    focusRequester.freeFocus()
+//                                    keyboardController?.hide()
+                                    showDialogDeleteAll.value = false
+                                }) {
+                                    androidx.compose.material.Text(
+                                        stringResource(R.string.yes), color = colorResource(id = R.color.white),
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            },
+                            dismissButton = {
+                                Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = colorResource(id = R.color.boloto)),
+                                    onClick = { showDialogDeleteAll.value = false
+                                    }) {
+                                    androidx.compose.material.Text(stringResource(R.string.cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
+                                }
+                            })
+                    }
                 }
-                AsyncImage(model = selectedImage, contentDescription = "photo",
+                AsyncImage(model = selectedImage, contentDescription = "bigphoto",
                     modifier = Modifier .width(if (isPressed) expandedImageWidth else collapsedImageWidth)
                         .height(if (isPressed) expandedImageHeight else collapsedImageHeight)
                         .padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp)),
@@ -303,27 +739,3 @@ fun OneRecipeScreen(navController: NavController, title: String, content: String
         }
     }
 }
-
-//fun updateDatabaseWithImages(title: String, images: List<String>) {
-//    val distinctImages = images.distinct()
-//    val imagessString = distinctImages.joinToString(",")
-//    scope.launch {
-//        db.oneDao().clearImages(decodedTitle)
-//        db.oneDao().updateImages(decodedTitle, imagessString)
-//    }
-//}
-//fun onDelete(imageUri: String) {
-//    scope.launch {
-//        val uriToDelete = Uri.parse(imageUri)
-//        context.contentResolver.delete(uriToDelete, null, null)
-//        listImages.remove(imageUri)
-//        imagesString = listImages.joinToString(",")
-//        if (imagesString.isBlank()) {
-//            imagesString = R.drawable.baseline_add_photo_alternate_24.toString()
-//        }
-//        db.oneDao().updateImages(decodedTitle, imagesString)
-//        withContext(Dispatchers.IO) {
-//            updateDatabaseWithImages(decodedTitle, listImages)
-//        }
-//    }
-//}

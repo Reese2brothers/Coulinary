@@ -78,11 +78,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.isEmpty
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -102,7 +100,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ShareCompat
@@ -132,7 +129,6 @@ import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
-import kotlin.io.path.exists
 
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -362,10 +358,9 @@ fun OneScreen(navController: NavController) {
                                         color = colorResource(id = R.color.boloto),
                                     )
                                     val isFavourite by produceState<Boolean>(initialValue = false, item.title) {
-                                        value = db.favouritesDao().isFavourite(item.title, "OneRecipesScreen")
+                                        value = db.favouritesDao().isFavourite(item.title, "OneRecipeScreen")
                                     }
-                                    androidx.compose.material.Icon(painter = painterResource(
-                                            id = if (isFavourite) R.drawable.baseline_favorite_24 else
+                                    Icon(painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else
                                                 R.drawable.baseline_favorite_border_24),
                                         contentDescription = "show_favourites",
                                         modifier = Modifier.size(25.dp).padding(end = 8.dp, bottom = 4.dp),

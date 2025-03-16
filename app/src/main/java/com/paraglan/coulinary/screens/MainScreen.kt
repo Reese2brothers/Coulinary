@@ -2,6 +2,7 @@ package com.paraglan.coulinary.screens
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
@@ -52,6 +53,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -91,9 +93,10 @@ import com.paraglan.coulinary.database.Favourites
 import com.paraglan.coulinary.database.MainCategories
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("ContextCastToActivity")
+@SuppressLint("ContextCastToActivity", "CoroutineCreationDuringComposition")
 @Composable
 fun MainScreen(navController: NavController){
     var isSearchIconClicked by remember {mutableStateOf(false)}
@@ -118,6 +121,9 @@ fun MainScreen(navController: NavController){
     val showDialogFavDeleteAll = remember { mutableStateOf(false) }
     val showDialogDeleteMainItem = remember { mutableStateOf(false) }
     val showDialogEditMainItem = remember { mutableStateOf(false) }
+    val isFavouritesEmpty by produceState<Boolean>(initialValue = true) {
+        value = db.favouritesDao().isEmpty() }
+    var favouritesCount by remember { mutableStateOf(0) }
 
     val wordKeys = listOf(
         "one", "two", "three", "four", "five",
@@ -210,12 +216,14 @@ fun MainScreen(navController: NavController){
             verticalArrangement = Arrangement.SpaceEvenly){
             Row(modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 16.dp, bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly){
-                 Image(painter = painterResource(R.drawable.baseline_favorite_border_24),
+                 Image(painter = painterResource(id = if (!isFavouritesEmpty) R.drawable.baseline_favorite_border_24
+                 else R.drawable.baseline_favorite_24),
                      contentDescription = "border", modifier = Modifier.size(40.dp).clickable {
                              panelStateLeft = PanelState.Expanded
                          }, contentScale = ContentScale.FillBounds
                  )
-                Text(text = "0",
+                scope.launch { favouritesCount = db.favouritesDao().getCount() }
+                Text(text = favouritesCount.toString(),
                     fontSize = 12.sp,
                     color = colorResource(R.color.boloto),
                     modifier = Modifier.offset(y = 8.dp, x = -4.dp),
@@ -581,15 +589,14 @@ fun MainScreen(navController: NavController){
                         itemsIndexed(listFavourites) { index, item ->
                             Card(modifier = Modifier.padding(top = 4.dp, start = 8.dp,
                                 end = 8.dp, bottom = 4.dp).fillMaxWidth().height(120.dp).background(Color.Transparent),
-                                shape = CutCornerShape(bottomStart = 8.dp), //elevation = 5.dp,
+                                shape = CutCornerShape(bottomStart = 8.dp),
                                 border = BorderStroke(1.dp, color = colorResource(id = R.color.boloto)),
                                 onClick = {
                                     val encodedTitle = URLEncoder.encode(item.title, "UTF-8")
                                     val encodedContent = URLEncoder.encode(item.content, "UTF-8")
-                                    val encodedImages = URLEncoder.encode(item.images, "UTF-8")
-                                        ?: R.drawable.baseline_add_photo_alternate_24.toString()
+                                    val encodedImages = URLEncoder.encode(item.images, "UTF-8") ?: R.drawable.baseline_add_photo_alternate_24.toString()
                                     when (item.favouriteskey) {
-                                       // "OneRecepiesScreen" -> navController.navigate("OneRecepiesScreen/$encodedTitle/$encodedContent/$encodedImages")
+                                        "OneRecipeScreen" -> navController.navigate("OneRecipeScreen/$encodedTitle/$encodedContent/$encodedImages/video/0")
                                        // "TwoRecepiesScreen" -> navController.navigate("TwoRecepiesScreen/$encodedTitle/$encodedContent/$encodedImages")
                                        // "ThreeRecepiesScreen" -> navController.navigate("ThreeRecepiesScreen/$encodedTitle/$encodedContent/$encodedImages")
                                         //"FourRecepiesScreen" -> navController.navigate("FourRecepiesScreen/$encodedTitle/$encodedContent/$encodedImages")
