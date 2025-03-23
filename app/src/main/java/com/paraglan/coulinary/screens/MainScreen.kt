@@ -2,6 +2,7 @@ package com.paraglan.coulinary.screens
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -385,7 +386,16 @@ fun MainScreen(navController: NavController){
                                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                                                     containerColor = colorResource(id = R.color.boloto)),
                                                     onClick = {
-                                                        scope.launch { db.mainCategoriesDao().delete(selectedItemMainDeleteItem!!) }
+                                                        when(item.wordkey){
+                                                            "one" -> { scope.launch{ val allImageUris = db.oneDao().getAllImages().map { it.images }
+                                                                        .flatMap { it.split(",").filter { it.isNotBlank() && it.startsWith("content://") } }.map { Uri.parse(it) }
+                                                                    db.oneDao().deleteAll()
+                                                                    db.oneLinksDao().deleteAll()
+                                                                    allImageUris.forEach { imageUri -> context.contentResolver.delete(imageUri, null, null) }
+                                                                    db.mainCategoriesDao().delete(selectedItemMainDeleteItem!!)
+                                                                }
+                                                            }
+                                                            }
                                                         focusRequester.freeFocus()
                                                         keyboardController?.hide()
                                                         showDialogDeleteMainItem.value = false
@@ -461,7 +471,6 @@ fun MainScreen(navController: NavController){
                              panelStateRight = PanelState.Hidden
                              focusRequester.freeFocus()
                              keyboardController?.hide()
-                             //var newWordKey: String? = null
                              if (text.isNotEmpty()) {
                                  scope.launch { if (selectedCategoryId == 0) {
                                          var newWordKey: String? = null

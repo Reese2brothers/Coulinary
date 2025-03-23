@@ -17,8 +17,8 @@ interface MainCategoriesDao {
     @Query("SELECT wordkey FROM maincategories")
     suspend fun getAllKeys(): List<String>
 
-    @Query("SELECT * FROM maincategories WHERE wordkey = :wordkey")
-    suspend fun getSectionByWordkey(wordkey: String): MainCategories?
+//    @Query("SELECT * FROM maincategories WHERE wordkey = :wordkey")
+//    suspend fun getSectionByWordkey(wordkey: String): MainCategories?
 
     @Query("SELECT * FROM maincategories WHERE id = :id")
     suspend fun getCategoryById(id: Int): MainCategories?
@@ -27,8 +27,8 @@ interface MainCategoriesDao {
     suspend fun insert(mainCategories: MainCategories)
     @Delete
     suspend fun delete(mainCategories: MainCategories)
-    @Query("DELETE FROM MainCategories")
-    suspend fun deleteAll()
+//    @Query("DELETE FROM MainCategories")
+//    suspend fun deleteAll()
     @Upsert
     suspend fun upsert(mainCategories: MainCategories)
 }
@@ -64,8 +64,8 @@ interface OneDao {
     @Query("SELECT * FROM one")
     fun getAll(): Flow<List<One>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertOne(one: One)
+//    @Insert(onConflict = OnConflictStrategy.IGNORE)
+//    suspend fun insertOne(one: One)
 
     @Upsert
     suspend fun upsert(one : One)
@@ -85,36 +85,36 @@ interface OneDao {
     @Query("SELECT * FROM one")
     suspend fun getAllImages(): List<One>
 
-    @Query("UPDATE one SET title = :newTitle, content = :newContent, images = :currentImage WHERE title = :oldTitle")
-    suspend fun updateRecepie(newTitle: String, newContent: String, oldTitle: String, currentImage: String)
+//    @Query("UPDATE one SET title = :newTitle, content = :newContent, images = :currentImage WHERE title = :oldTitle")
+//    suspend fun updateRecepie(newTitle: String, newContent: String, oldTitle: String, currentImage: String)
 
-    @Query("SELECT title FROM One")
-    suspend fun getTitle(): String
+//    @Query("SELECT title FROM One")
+//    suspend fun getTitle(): String
 
-    @Query("SELECT content FROM One")
-    suspend fun getContent(): String
+//    @Query("SELECT content FROM One")
+//    suspend fun getContent(): String
 
-    @Query("UPDATE one SET videos = :videos WHERE title = :title")
-    suspend fun updateVideos(title: String, videos: String)
+    @Query("UPDATE one SET videos = :videos WHERE id = :id")
+    suspend fun updateVideos(id: Int, videos: String)
 
     @Query("SELECT videos FROM one WHERE title = :title")
     suspend fun getVideosByTitle(title: String): String
 
-    @Query("UPDATE one SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE title = :title")
-    suspend fun appendVideo(title: String, newVideo: String)
+    @Query("UPDATE one SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    suspend fun appendVideo(id: Int, newVideo: String)
 
     @Query("SELECT COUNT(*) FROM one WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
 
-    @Query("SELECT images FROM one WHERE title = :title")
-    suspend fun getImages(title: String): String?
+//    @Query("SELECT images FROM one WHERE title = :title")
+//    suspend fun getImages(title: String): String?
 
-    @Query("UPDATE one SET images = CASE WHEN images IS NULL OR images = '' THEN :images ELSE images || ',' || :images END WHERE title = :title")
-    suspend fun appendImage(title: String, images: String)
+//    @Query("UPDATE one SET images = CASE WHEN images IS NULL OR images = '' THEN :images ELSE images || ',' || :images END WHERE title = :title")
+//    suspend fun appendImage(title: String, images: String)
 
-    @Query("UPDATE one SET images = '' WHERE title = :title")
-    suspend fun clearImages(title: String)
+//    @Query("UPDATE one SET images = '' WHERE title = :title")
+//    suspend fun clearImages(title: String)
 
-    @Query("SELECT * FROM one WHERE id = :id")
-    fun getOneById(id: Int): One
+//    @Query("SELECT * FROM one WHERE id = :id")
+//    fun getOneById(id: Int): One
 }

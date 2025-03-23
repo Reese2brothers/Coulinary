@@ -65,6 +65,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.geometry.isEmpty
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -99,6 +100,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URLDecoder
+import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,6 +118,9 @@ fun OneRecipeScreen(navController: NavController, title: String, content: String
     var launchCamera: () -> Unit = {}
     var launchPhotoPicker: () -> Unit = {}
     var listsImage = remember { mutableStateListOf<String>() }
+    var listsVideo = remember { mutableStateListOf<String>() }
+    Log.d("TAG", "OneRecipeScreenVideo: $listsVideo")
+
     var selectedImage by remember { mutableStateOf("") }
     var isCamera by remember { mutableStateOf(false) }
     var isGallery by remember { mutableStateOf(false) }
@@ -364,6 +369,16 @@ fun OneRecipeScreen(navController: NavController, title: String, content: String
             }
         }
     }
+    LaunchedEffect(key1 = listsVideo) {
+        withContext(Dispatchers.IO) {
+            val videoString = db.oneDao().getVideosByTitle(title) ?: ""
+            if (videoString.isNotEmpty()) {
+                val videosList = videoString.split(",").map { it.trim() }
+                listsVideo.addAll(videosList)
+                Log.d("TAG", "OneRecipeScreen: $listsVideo")
+            }
+        }
+    }
     LaunchedEffect(isCamera) {
         if (isCamera) {
             launchCamera()
@@ -478,6 +493,7 @@ fun OneRecipeScreen(navController: NavController, title: String, content: String
                     verticalAlignment = Alignment.CenterVertically){
                     Image(painter = painterResource(R.drawable.edit), contentDescription = "edit",
                         modifier = Modifier.size(30.dp).clickable {
+                            if(tints) { scope.launch { db.favouritesDao().deleteFavourite(text, "OneRecipeScreen") } }
                             showDialogEditRecipe.value = true
                         }
                     )
@@ -536,8 +552,10 @@ fun OneRecipeScreen(navController: NavController, title: String, content: String
                             confirmButton = {
                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                                     containerColor = colorResource(id = R.color.boloto)), onClick = {
-                                    scope.launch {db.oneDao().upsert(One(title = text, content = text2,
+                                    scope.launch {
+                                        db.oneDao().upsert(One(title = text, content = text2,
                                         images = listsImage.joinToString(","), videos = videos, id = id))
+                                        if(!tints){ db.favouritesDao().insertFavourites(Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "OneRecipeScreen")) }
                                     }
                                     showDialogEditRecipe.value = false
                                 }) {
@@ -681,7 +699,16 @@ fun OneRecipeScreen(navController: NavController, title: String, content: String
                         isPressed = true}
                     )
                     Image (painter = painterResource(R.drawable.baseline_ondemand_video_24), contentDescription = "video",
-                        modifier = Modifier.size(30.dp).clickable { }
+                        modifier = Modifier.size(30.dp)
+                            .clickable {
+                                val modifiedList = listsVideo.filter { it != "video" }.toMutableList()
+                                if (modifiedList.isEmpty()) {
+                                    modifiedList.add("video")
+                                }
+                                val encodedList = modifiedList.joinToString(",") { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }
+                                navController.navigate("VideoScreen/$encodedList/$text/$id/OneRecipeScreen")
+                                Log.d("TAG", "VideoScreenEncodedList: $encodedList")
+                            }
                     )
                 }
                 Text(text = text, fontSize = 22.sp, color = colorResource(R.color.boloto),
