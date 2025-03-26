@@ -64,9 +64,6 @@ interface OneDao {
     @Query("SELECT * FROM one")
     fun getAll(): Flow<List<One>>
 
-//    @Insert(onConflict = OnConflictStrategy.IGNORE)
-//    suspend fun insertOne(one: One)
-
     @Upsert
     suspend fun upsert(one : One)
 
@@ -79,20 +76,11 @@ interface OneDao {
     @Query("SELECT images FROM one WHERE title = :title")
     suspend fun getImagesByTitle(title: String): String
 
-    @Query("UPDATE one SET images = :images WHERE title = :title")
-    suspend fun updateImages(title: String, images: String)
+    @Query("UPDATE one SET images = :images WHERE id = :id")
+    suspend fun updateImages(id: Int, images: String)
 
     @Query("SELECT * FROM one")
     suspend fun getAllImages(): List<One>
-
-//    @Query("UPDATE one SET title = :newTitle, content = :newContent, images = :currentImage WHERE title = :oldTitle")
-//    suspend fun updateRecepie(newTitle: String, newContent: String, oldTitle: String, currentImage: String)
-
-//    @Query("SELECT title FROM One")
-//    suspend fun getTitle(): String
-
-//    @Query("SELECT content FROM One")
-//    suspend fun getContent(): String
 
     @Query("UPDATE one SET videos = :videos WHERE id = :id")
     suspend fun updateVideos(id: Int, videos: String)
@@ -105,16 +93,40 @@ interface OneDao {
 
     @Query("SELECT COUNT(*) FROM one WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
+}
 
-//    @Query("SELECT images FROM one WHERE title = :title")
-//    suspend fun getImages(title: String): String?
+@Dao
+interface TwoDao {
+    @Query("SELECT * FROM two")
+    fun getAll(): Flow<List<Two>>
 
-//    @Query("UPDATE one SET images = CASE WHEN images IS NULL OR images = '' THEN :images ELSE images || ',' || :images END WHERE title = :title")
-//    suspend fun appendImage(title: String, images: String)
+    @Upsert
+    suspend fun upsert(two : Two)
 
-//    @Query("UPDATE one SET images = '' WHERE title = :title")
-//    suspend fun clearImages(title: String)
+    @Delete
+    suspend fun delete(two: Two)
 
-//    @Query("SELECT * FROM one WHERE id = :id")
-//    fun getOneById(id: Int): One
+    @Query("DELETE FROM two")
+    suspend fun deleteAll()
+
+    @Query("SELECT images FROM two WHERE title = :title")
+    suspend fun getImagesByTitle(title: String): String
+
+    @Query("UPDATE two SET images = :images WHERE id = :id")
+    suspend fun updateImages(id: Int, images: String)
+
+    @Query("SELECT * FROM two")
+    suspend fun getAllImages(): List<Two>
+
+    @Query("UPDATE two SET videos = :videos WHERE id = :id")
+    suspend fun updateVideos(id: Int, videos: String)
+
+    @Query("SELECT videos FROM two WHERE title = :title")
+    suspend fun getVideosByTitle(title: String): String
+
+    @Query("UPDATE two SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    suspend fun appendVideo(id: Int, newVideo: String)
+
+    @Query("SELECT COUNT(*) FROM two WHERE title = :title")
+    suspend fun getVideoCountByTitle(title: String): Int
 }

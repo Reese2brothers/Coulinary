@@ -115,6 +115,7 @@ import com.paraglan.coulinary.database.One
 import com.paraglan.coulinary.database.OneLinks
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.PanelState
+import com.paraglan.coulinary.screens.saveImageToFile2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -157,7 +158,6 @@ fun OneScreen(navController: NavController) {
     val itemsFlow: Flow<List<OneLinks>> = db.oneLinksDao().getAll()
     val onelistFlow: Flow<List<One>> = db.oneDao().getAll()
     val links by itemsFlow.collectAsState(initial = emptyList())
-    val onelist by onelistFlow.collectAsState(initial = emptyList())
     val showDialogLinkDeleteAll = remember { mutableStateOf(false) }
     val showDialogAddNewLink = remember { mutableStateOf(false) }
     val showDialogDeleteItemLink = remember { mutableStateOf(false) }
@@ -181,7 +181,12 @@ fun OneScreen(navController: NavController) {
             bitmap = null
         },
         onBitmapSelected = { btm ->
-            bitmap = btm
+            //bitmap = btm
+            if (btm != null) {
+                val uri = saveImageToFile2(context, btm)
+                bitmap = btm
+                selectedImageUri = uri
+            }
         },
         onLaunchCamera = { cameraLauncher ->
             launchCamera = cameraLauncher
@@ -600,7 +605,7 @@ fun OneScreen(navController: NavController) {
                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                                     containerColor = colorResource(id = R.color.boloto)), onClick = {
                                     scope.launch {
-                                        parseLinkAndSave(context = context, titleLink = titleLink, db = db,
+                                        parseOneLinkAndSave(context = context, titleLink = titleLink, db = db,
                                             scope = scope, onSuccess = {
                                                 showDialogAddNewLink.value = false
                                                 titleLink = ""
@@ -780,7 +785,7 @@ fun OneScreen(navController: NavController) {
                                                     containerColor = colorResource(id = R.color.boloto)), onClick = {
                                                     scope.launch {
                                                         selectedDeleteItemLink?.let {
-                                                            db.oneLinksDao().deleteOneLinks(it)
+                                                            db.oneLinksDao().deleteLinks(it)
                                                         }
                                                     }
                                                     showDialogDeleteItemLink.value = false
@@ -1011,7 +1016,7 @@ enum class PanelState {
     Hidden,
     Expanded
 }
-fun parseLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
+fun parseOneLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
                      onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<OneLinks>,
                      setIsLoading: (Boolean) -> Unit) {
     if (!isNetworkAvailable(context)) {

@@ -38,7 +38,7 @@
     <string name="alert_delete_video">Вы действительно хотите удалить данное видео?</string>
     <string name="onerec_video_from_gallery">видео из галереи</string>
     <string name="onerec_video_from_camera">видео с камеры</string>
-    <string name="onerec_delete_all_videos">удалить все видео</string>
-    <string name="alert_delete_all_videos">Вы действительно хотите удалить все видео?</string>
+    <string name="onerec_delete_all_videos">удалить видео</string>
+    <string name="alert_delete_all_videos">Вы действительно хотите удалить видео?</string>
 
 </resources>

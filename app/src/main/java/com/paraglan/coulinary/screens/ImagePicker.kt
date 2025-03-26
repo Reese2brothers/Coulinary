@@ -39,7 +39,7 @@ fun ImagePicker(
 ) {
     val context = LocalContext.current
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    var currentUri: Uri? = null
+    var currentUri: Uri? by remember { mutableStateOf(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         Log.d("ImagePicker", "cameraLauncher success: $success")

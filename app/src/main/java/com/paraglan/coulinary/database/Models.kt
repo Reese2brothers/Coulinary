@@ -31,3 +31,12 @@ data class One(
     val videos : String = "video",
     @PrimaryKey(autoGenerate = true) var id: Int = 0
 )
+
+@Entity
+data class Two(
+    val title : String,
+    val content : String,
+    val images : String,
+    val videos : String = "video",
+    @PrimaryKey(autoGenerate = true) var id: Int = 0
+)

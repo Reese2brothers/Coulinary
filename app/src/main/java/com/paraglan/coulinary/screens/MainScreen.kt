@@ -395,6 +395,14 @@ fun MainScreen(navController: NavController){
                                                                     db.mainCategoriesDao().delete(selectedItemMainDeleteItem!!)
                                                                 }
                                                             }
+                                                            "two" -> { scope.launch{ val allImageUris = db.twoDao().getAllImages().map { it.images }
+                                                                .flatMap { it.split(",").filter { it.isNotBlank() && it.startsWith("content://") } }.map { Uri.parse(it) }
+                                                                db.twoDao().deleteAll()
+                                                                db.twoLinksDao().deleteAll()
+                                                                allImageUris.forEach { imageUri -> context.contentResolver.delete(imageUri, null, null) }
+                                                                db.mainCategoriesDao().delete(selectedItemMainDeleteItem!!)
+                                                            }
+                                                            }
                                                             }
                                                         focusRequester.freeFocus()
                                                         keyboardController?.hide()
@@ -606,7 +614,7 @@ fun MainScreen(navController: NavController){
                                     val encodedImages = URLEncoder.encode(item.images, "UTF-8") ?: R.drawable.baseline_add_photo_alternate_24.toString()
                                     when (item.favouriteskey) {
                                         "OneRecipeScreen" -> navController.navigate("OneRecipeScreen/$encodedTitle/$encodedContent/$encodedImages/video/0")
-                                       // "TwoRecepiesScreen" -> navController.navigate("TwoRecepiesScreen/$encodedTitle/$encodedContent/$encodedImages")
+                                        "TwoRecipeScreen" -> navController.navigate("TwoRecipeScreen/$encodedTitle/$encodedContent/$encodedImages/video/0")
                                        // "ThreeRecepiesScreen" -> navController.navigate("ThreeRecepiesScreen/$encodedTitle/$encodedContent/$encodedImages")
                                         //"FourRecepiesScreen" -> navController.navigate("FourRecepiesScreen/$encodedTitle/$encodedContent/$encodedImages")
                                         //"FiveRecepiesScreen" -> navController.navigate("FiveRecepiesScreen/$encodedTitle/$encodedContent/$encodedImages")

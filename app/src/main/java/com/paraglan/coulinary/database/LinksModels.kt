@@ -11,3 +11,12 @@ data class OneLinks(
     var comment : String,
     @PrimaryKey(autoGenerate = true) var id: Int = 0
 )
+
+@Entity
+data class TwoLinks(
+    val title : String,
+    val link : String,
+    val image : String,
+    var comment : String,
+    @PrimaryKey(autoGenerate = true) var id: Int = 0
+)

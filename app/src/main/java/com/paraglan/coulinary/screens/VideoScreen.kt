@@ -109,12 +109,11 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
     var mediaPlayer: MediaPlayer? by remember { mutableStateOf(null) }
     val showDialogThree = remember { mutableStateOf(false) }
     val showDialogFour = remember { mutableStateOf(false) }
-    var selectedItemIndex by remember { mutableStateOf(0) }
     var selectedItem by remember { mutableStateOf<String?>(null) }
+    var sizer by remember { mutableStateOf(350.dp) }
+    var isSizer by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "database").build() }
-
-
     LaunchedEffect(key1 = videoUrl) {
         scope.launch {
             try {
@@ -133,7 +132,6 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
     fun releaseMediaPlayer(mediaPlayer: MediaPlayer?) {
         try {
             mediaPlayer?.apply {
-                //stop()
                 reset()
                 release()
             }
@@ -154,13 +152,13 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
                     }
                     when(key){
                         "OneRecipeScreen" -> db.oneDao().appendVideo(id, savedUri.toString())
-                        // "TwoRecipeScreen" -> db.twoDao().updateVideos(id, videosString)
+                         "TwoRecipeScreen" -> db.twoDao().appendVideo(id, savedUri.toString())
                         // "ThreeRecipeScreen" -> db.threeDao().updateVideos(id, videosString)
                     }
-                    //db.oneDao().appendVideo(title, savedUri.toString())
                     videoCount++
                     selectedVideoUri = savedUri
                     isVideoCaptured = true
+                    listVideos = videosString.split(",").filter { it.startsWith("content://") }
                 }
             }
         }
@@ -178,13 +176,13 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
                     }
                     when(key){
                         "OneRecipeScreen" -> db.oneDao().appendVideo(id, savedUri.toString())
-                        // "TwoRecipeScreen" -> db.twoDao().updateVideos(id, videosString)
+                         "TwoRecipeScreen" -> db.twoDao().appendVideo(id, savedUri.toString())
                         // "ThreeRecipeScreen" -> db.threeDao().updateVideos(id, videosString)
                     }
-                    //db.oneDao().appendVideo(title, savedUri.toString())
                     videoCount++
                     selectedVideoUri = savedUri
                     isVideoCaptured = true
+                    listVideos = videosString.split(",").filter { it.startsWith("content://") }
                 }
             }
         }
@@ -203,13 +201,13 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
                         }
                         when(key){
                             "OneRecipeScreen" -> db.oneDao().appendVideo(id, savedUri.toString())
-                            // "TwoRecipeScreen" -> db.twoDao().updateVideos(id, videosString)
+                             "TwoRecipeScreen" -> db.twoDao().appendVideo(id, savedUri.toString())
                             // "ThreeRecipeScreen" -> db.threeDao().updateVideos(id, videosString)
                         }
-                        //db.oneDao().appendVideo(title, savedUri.toString())
                         videoCount++
                         selectedVideoUri = savedUri
                         isVideoCaptured = true
+                        listVideos = videosString.split(",").filter { it.startsWith("content://") }
                     }
                 }
             }
@@ -309,7 +307,7 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
                                         videosString = "video"
                                         when(key){
                                             "OneRecipeScreen" -> db.oneDao().updateVideos(id, videosString)
-                                           // "TwoRecipeScreen" -> db.twoDao().updateVideos(id, videosString)
+                                            "TwoRecipeScreen" -> db.twoDao().updateVideos(id, videosString)
                                            // "ThreeRecipeScreen" -> db.threeDao().updateVideos(id, videosString)
                                         }
                                         withContext(Dispatchers.Main) {
@@ -337,7 +335,7 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
                 itemsIndexed(listVideos) { index, item ->
                     VideoPlayer(videoUri = item)
                     Card(modifier = Modifier.fillMaxWidth().padding(top = 4.dp, start = 8.dp, end = 8.dp)
-                        .height(350.dp).background(Color.Transparent),
+                        .height(sizer).background(Color.Transparent),
                         shape = RoundedCornerShape(8.dp)) {
                         fun createThumbnailForVideo(videoUri: Uri): String? {
                             try {
@@ -531,14 +529,11 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
                             Row( modifier = Modifier.fillMaxWidth().height(50.dp).background(colorResource(R.color.white)),
                                 horizontalArrangement = Arrangement.SpaceAround,
                                 verticalAlignment = Alignment.CenterVertically) {
-                                Icon(painter = painterResource(R.drawable.baseline_fullscreen_24), contentDescription = "go_to_full_screen",
+                                Icon(painter = painterResource(if(!isSizer) R.drawable.baseline_fullscreen_24 else R.drawable.baseline_fullscreen_exit_24), contentDescription = "go_to_full_screen",
                                     modifier = Modifier.size(30.dp).padding(start = 8.dp)
                                         .clickable {
-//                                    val intent = Intent(context, FullscreenActivity::class.java
-//                                    ).apply {
-//                                        putExtra("videoUri", item.toString())
-//                                    }
-//                                    context.startActivity(intent)
+                                            isSizer = !isSizer
+                                            if(isSizer) sizer = 550.dp else sizer = 350.dp
                                         }
                                 )
                                 Text(text = formatTime(videoPosition) + " / " + formatTime(videoDuration),
@@ -549,7 +544,8 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
                                     contentDescription = if (isPlaying) "Pause" else "Play",
                                     modifier = Modifier.size(30.dp).padding(end = 4.dp).clickable {
                                         isPlaying = !isPlaying
-                                        if (isPlaying) {
+
+                                        if (isPlaying && mediaPlayer != null) {
                                             mediaPlayer?.start()
                                         } else {
                                             mediaPlayer?.pause()
@@ -562,15 +558,14 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
                                         mediaPlayer?.pause()
                                         mediaPlayer?.seekTo(0)
                                         videoPosition = 0
-                                        //releaseMediaPlayer(mediaPlayer)
                                     })
-                                Icon(painter = painterResource(id = R.drawable.delete),
-                                    contentDescription = "delete_item_video",
-                                    modifier = Modifier.size(30.dp).padding(end = 8.dp).clickable {
-                                        showDialogFour.value = true
-                                        selectedItem = item
-                                    }, tint = colorResource(R.color.black)
-                                )
+//                                Icon(painter = painterResource(id = R.drawable.delete),
+//                                    contentDescription = "delete_item_video",
+//                                    modifier = Modifier.size(30.dp).padding(end = 8.dp).clickable {
+//                                        showDialogFour.value = true
+//                                        selectedItem = item
+//                                    }, tint = colorResource(R.color.black)
+//                                )
                                 if (showDialogFour.value) {
                                     AlertDialog(
                                         onDismissRequest = {
@@ -600,16 +595,13 @@ fun VideoScreen(navController: NavController, videoUrl: String, title: String, i
                                                             Log.e("TAG", "Error deleting video file: ${e.message}")
                                                         }
                                                         val updatedList = videosString.split(",").filter { it != selectedItem }
-                                                        //videosString = updatedList.joinToString(",")
                                                         var updatedVideosString = updatedList.joinToString(",")
                                                         if (updatedVideosString.isEmpty()) {
                                                             updatedVideosString = "video"
                                                         }
                                                         when(key){
-                                                            "OneRecipeScreen" -> {
-                                                                db.oneDao().updateVideos(id, updatedVideosString)
-                                                            }
-                                                            //"TwoRecipeScreen" -> db.twoDao().updateVideos(id, videosString)
+                                                            "OneRecipeScreen" ->  db.oneDao().updateVideos(id, updatedVideosString)
+                                                            "TwoRecipeScreen" -> db.twoDao().updateVideos(id, updatedVideosString)
                                                             //"ThreeRecipeScreen" -> db.threeDao().updateVideos(id, videosString)
 
                                                         }
@@ -692,7 +684,4 @@ fun Bitmap.toByteArray(): ByteArray {
     val stream = com.google.firebase.crashlytics.buildtools.reloc.org.apache.commons.io.output.ByteArrayOutputStream()
     compress(Bitmap.CompressFormat.JPEG, 100, stream)
     return stream.toByteArray()
-}
-fun deleteVideoLink(id: Int, currentVideos: String, linkToDelete: String) {
-
 }
