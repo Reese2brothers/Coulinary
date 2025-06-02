@@ -432,12 +432,12 @@ fun MainScreen(navController: NavController){
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
             Column(modifier = Modifier.fillMaxHeight().width(panelWidth).offset(x = animatedOffset)
+                .border(1.dp, Color.Black, CutCornerShape(topStart = 16.dp, bottomStart = 16.dp))
                 .background( brush = Brush.linearGradient(
                     colors = listOf(colorResource(R.color.trboloto), colorResource(R.color.white)),
                     start = Offset(0f, 0f),
                     end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                ),
-                    shape = CutCornerShape(topStart = 16.dp, bottomStart = 16.dp)),
+                ), shape = CutCornerShape(topStart = 16.dp, bottomStart = 16.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally) {
                  Column(modifier = Modifier.fillMaxWidth(),
                      horizontalAlignment = Alignment.CenterHorizontally,
@@ -536,6 +536,7 @@ fun MainScreen(navController: NavController){
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Column(modifier = Modifier.fillMaxHeight().width(panelWidthLeft).offset(x = -animatedOffsetLeft)
+                .border(1.dp, Color.Black, CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp))
                 .background(brush = Brush.linearGradient(
                         colors = listOf(colorResource(R.color.white), colorResource(R.color.trboloto)),
                         start = Offset(0f, Float.POSITIVE_INFINITY),

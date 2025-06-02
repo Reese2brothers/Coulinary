@@ -761,13 +761,10 @@ fun TwoRecipeScreen(navController: NavController, title: String, content: String
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter){
             Column(modifier = Modifier.fillMaxWidth().height(panelHeight).offset(y = animatedOffset)
-                .background(
-                    brush = Brush.linearGradient(colors = listOf(
-                        colorResource(R.color.boloto), colorResource(
-                            R.color.white)
-                    )),
-                    shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
-                ). border(2.dp, colorResource(R.color.black), shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)),
+                .border(1.dp, colorResource(R.color.black), shape = CutCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
+                .background(brush = Brush.linearGradient(colors = listOf(colorResource(R.color.boloto), colorResource(R.color.white)
+                    )), shape = CutCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
+                ),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom) {
                 LazyRow(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp).height(100.dp), state = rememberLazyListState()) {
@@ -857,7 +854,7 @@ fun TwoRecipeScreen(navController: NavController, title: String, content: String
                     fallback = painterResource(R.drawable.noimage),
                     contentScale = if(isPressed) ContentScale.Crop else ContentScale.Fit
                 )
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically,
+                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End){
                     Image(painter = painterResource(if(isPressed) R.drawable.baseline_fullscreen_exit_24 else R.drawable.baseline_fullscreen_24),
                         contentDescription = "big", modifier = Modifier.size(40.dp).clickable { if(isPressed){ panelState = PanelState.Hidden

@@ -501,6 +501,7 @@ fun TwoScreen(navController: NavController) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Column(modifier = Modifier.fillMaxHeight().width(panelWidthLeft)
                 .offset(x = -animatedOffsetLeft)
+                .border(1.dp, Color.Black, shape = CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp))
                 .background(brush = Brush.linearGradient(
                     colors = listOf(colorResource(R.color.white), colorResource(R.color.trboloto)),
                     start = Offset(0f, Float.POSITIVE_INFINITY),
@@ -907,7 +908,8 @@ fun TwoScreen(navController: NavController) {
         }
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd){
             Column(modifier = Modifier.fillMaxHeight().width(panelWidthRight)
-                .offset(x = animatedOffsetRight).background( brush = Brush.linearGradient(
+                .offset(x = animatedOffsetRight)
+                .border(1.dp, color = Color.Black, shape = CutCornerShape(topStart = 16.dp, bottomStart = 16.dp)).background( brush = Brush.linearGradient(
                     colors = listOf(colorResource(R.color.trboloto), colorResource(R.color.white)),
                     start = Offset(0f, 0f),
                     end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Кулінарія</string>
+    <string name="search">Пошук</string>
+    <string name="confirm">Підтвердження!</string>
+    <string name="edit_category">Редагувати категорію?</string>
+    <string name="yes">Так</string>
+    <string name="cancel">Скасувати</string>
+    <string name="delete_category">Видалити категорію?</string>
+    <string name="name_category">Назва категорії...</string>
+    <string name="enter_name_category">Введіть назву категорії!</string>
+    <string name="save">Зберегти</string>
+    <string name="favourite">Обране</string>
+    <string name="delete_all_from_favourite">Видалити все з обраного?</string>
+    <string name="delete_from_favourite">Видалити з обраного?</string>
+    <string name="nothing_else_save">Більше нічого зберегти!</string>
+    <string name="new_category_saved">Нову категорію збережено!</string>
+    <string name="links">Посилання</string>
+    <string name="delete_all_links">Видалити всі посилання?</string>
+    <string name="enter_new_link">Вставте нове посилання!</string>
+    <string name="enter_link">вставте посилання...</string>
+    <string name="please_check_your_link">Будь ласка, перевірте ваше посилання!</string>
+    <string name="delete_link">Видалити посилання?</string>
+    <string name="enter_comment">ваш коментар...</string>
+    <string name="edit_comment">Редагувати коментар?</string>
+    <string name="the_link_is_copied">Посилання скопійовано в буфер обміну!</string>
+    <string name="no_internet_connection">Немає інтернет-з\'єднання!</string>
+    <string name="enter_title_new_recipe">введіть назву...</string>
+    <string name="enter_content_new_recipe">введіть рецепт...</string>
+    <string name="enter_title_and_recipe">Введіть назву та рецепт!</string>
+    <string name="delete_recipe">Видалити рецепт?</string>
+    <string name="edit_recipe">Редагувати рецепт?</string>
+    <string name="delete_all_photos">Видалити всі фото?</string>
+    <string name="onerec_share_recepie_via">Поділитися рецептом</string>
+    <string name="file_pdf_is_created">PDF-файл створено!</string>
+    <string name="downloads_directory_not_accessible">Каталог завантажень недоступний</string>
+    <string name="enter_file_name">Введіть назву файлу!</string>
+    <string name="placeholder_enter_file_name">введіть назву файлу...</string>
+    <string name="alert_delete_video">Ви справді бажаєте видалити це відео?</string>
+    <string name="onerec_video_from_gallery">відео з галереї</string>
+    <string name="onerec_video_from_camera">відео з камери</string>
+    <string name="onerec_delete_all_videos">видалити відео</string>
+    <string name="alert_delete_all_videos">Ви справді бажаєте видалити відео?</string>
+</resources>
