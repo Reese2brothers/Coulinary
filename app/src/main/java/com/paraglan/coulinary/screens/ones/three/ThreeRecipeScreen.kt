@@ -1,4 +1,4 @@
-package com.paraglan.coulinary.screens.three
+package com.paraglan.coulinary.screens.ones.three
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -92,7 +92,7 @@ import com.paraglan.coulinary.database.Favourites
 import com.paraglan.coulinary.database.Three
 import com.paraglan.coulinary.database.Two
 import com.paraglan.coulinary.screens.ImagePicker
-import com.paraglan.coulinary.screens.one.PanelState
+import com.paraglan.coulinary.screens.ones.one.PanelState
 import com.paraglan.coulinary.screens.saveImageToFile2
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

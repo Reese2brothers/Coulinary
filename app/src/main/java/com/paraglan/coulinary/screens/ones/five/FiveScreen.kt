@@ -1,4 +1,4 @@
-package com.paraglan.coulinary.screens.two
+package com.paraglan.coulinary.screens.ones.five
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -108,11 +108,13 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
+import com.paraglan.coulinary.database.Five
+import com.paraglan.coulinary.database.FiveLinks
 import com.paraglan.coulinary.database.Two
 import com.paraglan.coulinary.database.TwoLinks
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.PanelState
-import com.paraglan.coulinary.screens.one.isNetworkAvailable
+import com.paraglan.coulinary.screens.ones.one.isNetworkAvailable
 import com.paraglan.coulinary.screens.saveImageToFile2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -132,12 +134,12 @@ import java.util.concurrent.TimeUnit
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TwoScreen(navController: NavController) {
+fun FiveScreen(navController: NavController) {
     var isSearchIconClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current as Activity
     val scope = rememberCoroutineScope()
     val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "database").build() }
-    val dairyList by db.twoDao().getAll().collectAsState(initial = emptyList())
+    val dairyList by db.fiveDao().getAll().collectAsState(initial = emptyList())
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     var searchText by remember { mutableStateOf("") }
@@ -153,8 +155,8 @@ fun TwoScreen(navController: NavController) {
     var selectedRecipeId by remember { mutableStateOf<Int>(0) }
     var selectedRecipeVideo by remember { mutableStateOf<Uri?>(null) }
 
-    val itemsFlow: Flow<List<TwoLinks>> = db.twoLinksDao().getAll()
-    val twolistFlow: Flow<List<Two>> = db.twoDao().getAll()
+    val itemsFlow: Flow<List<FiveLinks>> = db.fiveLinksDao().getAll()
+    val fivelistFlow: Flow<List<Five>> = db.fiveDao().getAll()
     val links by itemsFlow.collectAsState(initial = emptyList())
     val showDialogLinkDeleteAll = remember { mutableStateOf(false) }
     val showDialogAddNewLink = remember { mutableStateOf(false) }
@@ -162,10 +164,10 @@ fun TwoScreen(navController: NavController) {
     val showDialogLinkEditComment = remember { mutableStateOf(false) }
     var showDialogDeleteItemRecipe = remember { mutableStateOf(false) }
     var showDialogEditItemRecipe = remember { mutableStateOf(false) }
-    var selectedDeleteItemRecipe by remember { mutableStateOf<Two?>(null) }
-    var selectedEditItemRecipe by remember { mutableStateOf<Two?>(null) }
-    var selectedDeleteItemLink by remember { mutableStateOf<TwoLinks?>(null) }
-    var selectedEditItemLink by remember { mutableStateOf<TwoLinks?>(null) }
+    var selectedDeleteItemRecipe by remember { mutableStateOf<Five?>(null) }
+    var selectedEditItemRecipe by remember { mutableStateOf<Five?>(null) }
+    var selectedDeleteItemLink by remember { mutableStateOf<FiveLinks?>(null) }
+    var selectedEditItemLink by remember { mutableStateOf<FiveLinks?>(null) }
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -305,11 +307,11 @@ fun TwoScreen(navController: NavController) {
                             if(item.images.isEmpty()){
                                 val encodedImageUri = R.drawable.noimage.toString()
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("TwoRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("FiveRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             } else {
                                 val encodedImageUri = URLEncoder.encode(item.images, StandardCharsets.UTF_8.toString())
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("TwoRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("FiveRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             }
 
                         },
@@ -358,7 +360,7 @@ fun TwoScreen(navController: NavController) {
                                         color = colorResource(id = R.color.boloto),
                                     )
                                     val isFavourite by produceState<Boolean>(initialValue = false, item.title) {
-                                        value = db.favouritesDao().isFavourite(item.title, "TwoRecipeScreen")
+                                        value = db.favouritesDao().isFavourite(item.title, "FiveRecipeScreen")
                                     }
                                     Icon(painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else
                                         R.drawable.baseline_favorite_border_24),
@@ -446,7 +448,7 @@ fun TwoScreen(navController: NavController) {
                                                     val imageUrisToDelete = selectedDeleteItemRecipe?.images?.split(",")
                                                         ?.filter { it.isNotBlank() }
                                                         ?.map { Uri.parse(it) } ?: emptyList()
-                                                    selectedDeleteItemRecipe?.let { db.twoDao().delete(it) }
+                                                    selectedDeleteItemRecipe?.let { db.fiveDao().delete(it) }
                                                     imageUrisToDelete.forEach { imageUri ->
                                                         if (imageUri.scheme == "content") {
                                                             context.contentResolver.delete(imageUri, null, null)
@@ -623,7 +625,7 @@ fun TwoScreen(navController: NavController) {
                                     containerColor = colorResource(id = R.color.boloto)
                                 ), onClick = {
                                     scope.launch {
-                                        parseTwoLinkAndSave(context = context, titleLink = titleLink, db = db,
+                                        parseFiveLinkAndSave(context = context, titleLink = titleLink, db = db,
                                             scope = scope, onSuccess = {
                                                 showDialogAddNewLink.value = false
                                                 titleLink = ""
@@ -669,7 +671,7 @@ fun TwoScreen(navController: NavController) {
                                     containerColor = colorResource(id = R.color.boloto)
                                 ), onClick = {
                                     scope.launch {
-                                        db.twoLinksDao().deleteAll()
+                                        db.fiveLinksDao().deleteAll()
                                     }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
@@ -771,7 +773,7 @@ fun TwoScreen(navController: NavController) {
                                                     ), onClick = {
                                                         scope.launch {
                                                             selectedEditItemLink?.let { it.comment = tempComment
-                                                                db.twoLinksDao().upsertLink(it)
+                                                                db.fiveLinksDao().upsertLink(it)
                                                             }
                                                         }
                                                         focusRequester.freeFocus()
@@ -828,7 +830,7 @@ fun TwoScreen(navController: NavController) {
                                                 ), onClick = {
                                                     scope.launch {
                                                         selectedDeleteItemLink?.let {
-                                                            db.twoLinksDao().deleteLinks(it)
+                                                            db.fiveLinksDao().deleteLinks(it)
                                                         }
                                                     }
                                                     showDialogDeleteItemLink.value = false
@@ -935,9 +937,9 @@ fun TwoScreen(navController: NavController) {
                                 if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
                                     val imageToSave = selectedImageUri?.toString() ?: R.drawable.noimage.toString()
                                     val videoToSave = selectedRecipeVideo?.toString() ?: "video"
-                                    val recipe = Two(title = newTitleText, content = newContentText,
+                                    val recipe = Five(title = newTitleText, content = newContentText,
                                         images = imageToSave, videos = videoToSave, id = selectedRecipeId)
-                                    scope.launch { db.twoDao().upsert(recipe) }
+                                    scope.launch { db.fiveDao().upsert(recipe) }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
                                     panelStateRight = PanelState.Hidden
@@ -1069,9 +1071,9 @@ fun TwoScreen(navController: NavController) {
         }
     }
 }
-fun parseTwoLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
-                     onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<TwoLinks>,
-                     setIsLoading: (Boolean) -> Unit) {
+fun parseFiveLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
+                        onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<FiveLinks>,
+                        setIsLoading: (Boolean) -> Unit) {
     if (!isNetworkAvailable(context)) {
         setIsLoading(false)
         scope.launch(Dispatchers.Main) {
@@ -1138,7 +1140,7 @@ fun parseTwoLinkAndSave(context: Context, titleLink: String, db: AppDatabase, sc
             setIsLoading(false)
         }
         if (title.isNotEmpty() && textLink.isNotEmpty()) {
-            db.twoLinksDao().upsertLink(TwoLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
+            db.fiveLinksDao().upsertLink(FiveLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
             withContext(Dispatchers.Main) {
                 onSuccess()
                 if (links.isNotEmpty()){

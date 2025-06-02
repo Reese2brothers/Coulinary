@@ -1,4 +1,4 @@
-package com.paraglan.coulinary.screens.three
+package com.paraglan.coulinary.screens.ones.one
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -9,7 +9,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
@@ -108,13 +111,10 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
-import com.paraglan.coulinary.database.Three
-import com.paraglan.coulinary.database.ThreeLinks
-import com.paraglan.coulinary.database.Two
-import com.paraglan.coulinary.database.TwoLinks
+import com.paraglan.coulinary.database.One
+import com.paraglan.coulinary.database.OneLinks
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.PanelState
-import com.paraglan.coulinary.screens.one.isNetworkAvailable
 import com.paraglan.coulinary.screens.saveImageToFile2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -134,12 +134,12 @@ import java.util.concurrent.TimeUnit
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ThreeScreen(navController: NavController) {
+fun OneScreen(navController: NavController) {
     var isSearchIconClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current as Activity
     val scope = rememberCoroutineScope()
     val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "database").build() }
-    val dairyList by db.threeDao().getAll().collectAsState(initial = emptyList())
+    val dairyList by db.oneDao().getAll().collectAsState(initial = emptyList())
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     var searchText by remember { mutableStateOf("") }
@@ -155,8 +155,8 @@ fun ThreeScreen(navController: NavController) {
     var selectedRecipeId by remember { mutableStateOf<Int>(0) }
     var selectedRecipeVideo by remember { mutableStateOf<Uri?>(null) }
 
-    val itemsFlow: Flow<List<ThreeLinks>> = db.threeLinksDao().getAll()
-    val threelistFlow: Flow<List<Three>> = db.threeDao().getAll()
+    val itemsFlow: Flow<List<OneLinks>> = db.oneLinksDao().getAll()
+    val onelistFlow: Flow<List<One>> = db.oneDao().getAll()
     val links by itemsFlow.collectAsState(initial = emptyList())
     val showDialogLinkDeleteAll = remember { mutableStateOf(false) }
     val showDialogAddNewLink = remember { mutableStateOf(false) }
@@ -164,10 +164,11 @@ fun ThreeScreen(navController: NavController) {
     val showDialogLinkEditComment = remember { mutableStateOf(false) }
     var showDialogDeleteItemRecipe = remember { mutableStateOf(false) }
     var showDialogEditItemRecipe = remember { mutableStateOf(false) }
-    var selectedDeleteItemRecipe by remember { mutableStateOf<Three?>(null) }
-    var selectedEditItemRecipe by remember { mutableStateOf<Three?>(null) }
-    var selectedDeleteItemLink by remember { mutableStateOf<ThreeLinks?>(null) }
-    var selectedEditItemLink by remember { mutableStateOf<ThreeLinks?>(null) }
+    var selectedDeleteItemRecipe by remember { mutableStateOf<One?>(null) }
+    var selectedEditItemRecipe by remember { mutableStateOf<One?>(null) }
+    var selectedDeleteItemLink by remember { mutableStateOf<OneLinks?>(null) }
+    var selectedEditItemLink by remember { mutableStateOf<OneLinks?>(null) }
+    var selectedItemAddNewLink by remember { mutableStateOf<OneLinks?>(null) }
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -175,10 +176,12 @@ fun ThreeScreen(navController: NavController) {
     var launchPhotoPicker: () -> Unit = {}
     ImagePicker(
         onImageSelected = { uri ->
+            Log.d("OneScreen", "selectedImageUri: $uri")
             selectedImageUri = uri
             bitmap = null
         },
         onBitmapSelected = { btm ->
+            //bitmap = btm
             if (btm != null) {
                 val uri = saveImageToFile2(context, btm)
                 bitmap = btm
@@ -231,14 +234,14 @@ fun ThreeScreen(navController: NavController) {
     }
     LaunchedEffect(key1 = bitmap) {
         if (bitmap != null) {
-            Log.d("TwoScreen", "LaunchedEffect bitmap: $bitmap")
+            Log.d("OneScreen", "LaunchedEffect bitmap: $bitmap")
         }
     }
 
     Box(modifier = Modifier.fillMaxSize().systemBarsPadding()){
-        Image(painter = painterResource(R.drawable.foncook), contentDescription = "foncook",
-            modifier = Modifier.fillMaxSize(), contentScale = ContentScale.FillBounds
-        )
+         Image(painter = painterResource(R.drawable.foncook), contentDescription = "foncook",
+                     modifier = Modifier.fillMaxSize(), contentScale = ContentScale.FillBounds
+         )
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
             Row(modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 16.dp, bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly){
@@ -301,22 +304,23 @@ fun ThreeScreen(navController: NavController) {
             }
             LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp, bottom = 4.dp)) {
                 itemsIndexed(filteredList) {index, item ->
+                    Log.d("TAG", "OneScreen item.image1: ${item.images}")
                     Card(modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
                         .fillMaxWidth().height(120.dp).background(Color.Transparent).clickable {
                             if(item.images.isEmpty()){
                                 val encodedImageUri = R.drawable.noimage.toString()
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("ThreeRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("OneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             } else {
                                 val encodedImageUri = URLEncoder.encode(item.images, StandardCharsets.UTF_8.toString())
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("ThreeRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("OneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             }
 
                         },
                         shape = CutCornerShape(bottomStart = 8.dp),
                         border = BorderStroke(1.dp, color = colorResource(id = R.color.boloto)),
-                    ){
+                        ){
                         Row(modifier = Modifier.fillMaxSize().background(colorResource(R.color.white)),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center){
@@ -334,7 +338,7 @@ fun ThreeScreen(navController: NavController) {
                                         firstImageUri
                                     }
                                     AsyncImage(model = ImageRequest.Builder(context).data(imageModel)
-                                        .crossfade(true).build(),
+                                            .crossfade(true).build(),
                                         contentDescription = "choice_image",
                                         modifier = Modifier.fillMaxHeight().width(150.dp).fillMaxHeight(),
                                         contentScale = ContentScale.Crop
@@ -359,10 +363,10 @@ fun ThreeScreen(navController: NavController) {
                                         color = colorResource(id = R.color.boloto),
                                     )
                                     val isFavourite by produceState<Boolean>(initialValue = false, item.title) {
-                                        value = db.favouritesDao().isFavourite(item.title, "ThreeRecipeScreen")
+                                        value = db.favouritesDao().isFavourite(item.title, "OneRecipeScreen")
                                     }
                                     Icon(painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else
-                                        R.drawable.baseline_favorite_border_24),
+                                                R.drawable.baseline_favorite_border_24),
                                         contentDescription = "show_favourites",
                                         modifier = Modifier.size(25.dp).padding(end = 8.dp, bottom = 4.dp),
                                         tint = Color.Unspecified
@@ -378,21 +382,17 @@ fun ThreeScreen(navController: NavController) {
                                 if (showDialogEditItemRecipe.value) {
                                     AlertDialog(onDismissRequest = { showDialogEditItemRecipe.value = false },
                                         containerColor = colorResource(id = R.color.white),
-                                        title = { androidx.compose.material.Text(
-                                            stringResource(R.string.confirm),
+                                        title = { androidx.compose.material.Text(stringResource(R.string.confirm),
                                             color = colorResource(id = R.color.boloto),
                                             fontSize = 20.sp, fontWeight = FontWeight.Bold)
                                         },
-                                        text = { androidx.compose.material.Text(
-                                            stringResource(R.string.edit_recipe),
-                                            color = colorResource(id = R.color.boloto)
-                                        )
+                                        text = { androidx.compose.material.Text(stringResource(R.string.edit_recipe),
+                                            color = colorResource(id = R.color.boloto))
                                         },
                                         confirmButton = {
                                             Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                                containerColor = colorResource(id = R.color.boloto)
-                                            ), onClick = {
-                                                panelStateRight = PanelState.Expanded
+                                                containerColor = colorResource(id = R.color.boloto)), onClick = {
+                                                    panelStateRight = PanelState.Expanded
                                                 newTitleText = selectedEditItemRecipe!!.title ?: ""
                                                 newContentText = selectedEditItemRecipe!!.content ?: ""
                                                 selectedImageUri = selectedEditItemRecipe!!.images.toUri()
@@ -402,16 +402,14 @@ fun ThreeScreen(navController: NavController) {
                                                 keyboardController?.hide()
                                                 showDialogEditItemRecipe.value = false
                                             }) {
-                                                androidx.compose.material.Text(
-                                                    stringResource(R.string.yes), color = colorResource(id = R.color.white),
+                                                androidx.compose.material.Text(stringResource(R.string.yes), color = colorResource(id = R.color.white),
                                                     fontSize = 16.sp
                                                 )
                                             }
                                         },
                                         dismissButton = {
                                             Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                                containerColor = colorResource(id = R.color.boloto)
-                                            ),
+                                                containerColor = colorResource(id = R.color.boloto)),
                                                 onClick = { showDialogEditItemRecipe.value = false
                                                     focusRequester.freeFocus()
                                                     keyboardController?.hide()}) {
@@ -429,25 +427,21 @@ fun ThreeScreen(navController: NavController) {
                                 if (showDialogDeleteItemRecipe.value) {
                                     AlertDialog(onDismissRequest = { showDialogDeleteItemRecipe.value = false },
                                         containerColor = colorResource(id = R.color.white),
-                                        title = { androidx.compose.material.Text(
-                                            stringResource(R.string.confirm),
+                                        title = { androidx.compose.material.Text(stringResource(R.string.confirm),
                                             color = colorResource(id = R.color.boloto),
                                             fontSize = 20.sp, fontWeight = FontWeight.Bold)
                                         },
-                                        text = { androidx.compose.material.Text(
-                                            stringResource(R.string.delete_recipe),
-                                            color = colorResource(id = R.color.boloto)
-                                        )
+                                        text = { androidx.compose.material.Text(stringResource(R.string.delete_recipe),
+                                            color = colorResource(id = R.color.boloto))
                                         },
                                         confirmButton = {
                                             Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                                containerColor = colorResource(id = R.color.boloto)
-                                            ), onClick = {
+                                                containerColor = colorResource(id = R.color.boloto)), onClick = {
                                                 scope.launch {
                                                     val imageUrisToDelete = selectedDeleteItemRecipe?.images?.split(",")
                                                         ?.filter { it.isNotBlank() }
                                                         ?.map { Uri.parse(it) } ?: emptyList()
-                                                    selectedDeleteItemRecipe?.let { db.threeDao().delete(it) }
+                                                    selectedDeleteItemRecipe?.let { db.oneDao().delete(it) }
                                                     imageUrisToDelete.forEach { imageUri ->
                                                         if (imageUri.scheme == "content") {
                                                             context.contentResolver.delete(imageUri, null, null)
@@ -476,16 +470,14 @@ fun ThreeScreen(navController: NavController) {
                                                 keyboardController?.hide()
                                                 showDialogDeleteItemRecipe.value = false
                                             }) {
-                                                androidx.compose.material.Text(
-                                                    stringResource(R.string.yes), color = colorResource(id = R.color.white),
+                                                androidx.compose.material.Text(stringResource(R.string.yes), color = colorResource(id = R.color.white),
                                                     fontSize = 16.sp
                                                 )
                                             }
                                         },
                                         dismissButton = {
                                             Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                                containerColor = colorResource(id = R.color.boloto)
-                                            ),
+                                                containerColor = colorResource(id = R.color.boloto)),
                                                 onClick = { showDialogDeleteItemRecipe.value = false
                                                     focusRequester.freeFocus()
                                                     keyboardController?.hide()}) {
@@ -502,13 +494,12 @@ fun ThreeScreen(navController: NavController) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
             Column(modifier = Modifier.fillMaxHeight().width(panelWidthLeft)
                 .offset(x = -animatedOffsetLeft)
-                .border(1.dp, Color.Black, shape = CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp))
+                .border(1.dp, Color.Black, CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp))
                 .background(brush = Brush.linearGradient(
                     colors = listOf(colorResource(R.color.white), colorResource(R.color.trboloto)),
                     start = Offset(0f, Float.POSITIVE_INFINITY),
                     end = Offset(Float.POSITIVE_INFINITY, 0f)
-                ), shape = CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
-                ),
+                ), shape = CutCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(modifier = Modifier.fillMaxWidth().padding(end = 24.dp, top = 16.dp),
                     horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
@@ -531,100 +522,91 @@ fun ThreeScreen(navController: NavController) {
                     if (showDialogAddNewLink.value) {
                         AlertDialog(onDismissRequest = { showDialogAddNewLink.value = false },
                             containerColor = colorResource(id = R.color.white),
-                            title = { androidx.compose.material.Text(
-                                stringResource(R.string.enter_new_link),
+                            title = { androidx.compose.material.Text(stringResource(R.string.enter_new_link),
                                 color = colorResource(id = R.color.boloto), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             },
                             text = {
                                 Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceEvenly,
                                     horizontalAlignment = Alignment.CenterHorizontally){
-                                    TextField(value = titleLink,
-                                        onValueChange = { titleLink = it },
-                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
-                                            .border(2.dp, colorResource(R.color.boloto), RoundedCornerShape(16.dp))
-                                            .focusRequester(focusRequester).onKeyEvent {
-                                                if (it.key == Key.Enter) {
-                                                    keyboardController?.hide()
-                                                    true
-                                                } else {
-                                                    false
-                                                }
-                                            },
-                                        placeholder = { Text(context.getString(R.string.enter_link), color = colorResource(
-                                            R.color.boloto)
-                                        ) },
-                                        trailingIcon = {  if (titleLink.isNotEmpty()) {
-                                            Icon(
-                                                Icons.Default.Close, contentDescription = "close",
-                                                tint = colorResource(R.color.boloto), modifier = Modifier.clickable {
-                                                    titleLink = ""
-                                                    focusRequester.freeFocus()
-                                                    keyboardController?.hide()
-                                                }
-                                            )
-                                        } },
-                                        shape = RoundedCornerShape(16.dp),
-                                        colors = TextFieldDefaults.textFieldColors(
-                                            containerColor = colorResource(R.color.white),
-                                            cursorColor = colorResource(R.color.boloto),
-                                            unfocusedIndicatorColor = colorResource(R.color.boloto),
-                                            focusedIndicatorColor = colorResource(R.color.boloto)
-                                        ),
-                                        textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 16.sp),
-                                        singleLine = true,
-                                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Search),
-                                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
+                                TextField(value = titleLink,
+                                    onValueChange = { titleLink = it },
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+                                        .border(2.dp, colorResource(R.color.boloto), RoundedCornerShape(16.dp))
+                                        .focusRequester(focusRequester).onKeyEvent {
+                                        if (it.key == Key.Enter) {
                                             keyboardController?.hide()
-                                        })
-                                    )
-                                    TextField(value = commentForLink,
-                                        onValueChange = { commentForLink = it },
-                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp)
-                                            .border(2.dp, colorResource(R.color.boloto), RoundedCornerShape(16.dp))
-                                            .focusRequester(focusRequester).onKeyEvent {
-                                                if (it.key == Key.Enter) {
-                                                    keyboardController?.hide()
-                                                    true
-                                                } else {
-                                                    false
-                                                }
-                                            },
-                                        placeholder = { Text(
-                                            stringResource(R.string.enter_comment), color = colorResource(
-                                                R.color.boloto)
-                                        ) },
-                                        trailingIcon = {  if (commentForLink.isNotEmpty()) {
-                                            Icon(
-                                                Icons.Default.Close, contentDescription = "close",
-                                                tint = colorResource(R.color.boloto), modifier = Modifier.clickable {
-                                                    commentForLink = ""
-                                                    focusRequester.freeFocus()
-                                                    keyboardController?.hide()
-                                                }
-                                            )
-                                        } },
-                                        shape = RoundedCornerShape(16.dp),
-                                        colors = TextFieldDefaults.textFieldColors(
-                                            containerColor = colorResource(R.color.white),
-                                            cursorColor = colorResource(R.color.boloto),
-                                            unfocusedIndicatorColor = colorResource(R.color.boloto),
-                                            focusedIndicatorColor = colorResource(R.color.boloto)
-                                        ),
-                                        textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 16.sp),
-                                        singleLine = true,
-                                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Search),
-                                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
+                                            true
+                                        } else {
+                                            false
+                                        }
+                                    },
+                                    placeholder = { Text(context.getString(R.string.enter_link), color = colorResource(R.color.boloto)) },
+                                    trailingIcon = {  if (titleLink.isNotEmpty()) {
+                                        Icon(Icons.Default.Close, contentDescription = "close",
+                                            tint = colorResource(R.color.boloto), modifier = Modifier.clickable {
+                                                titleLink = ""
+                                                focusRequester.freeFocus()
+                                                keyboardController?.hide()
+                                            }
+                                        )
+                                    } },
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        containerColor = colorResource(R.color.white),
+                                        cursorColor = colorResource(R.color.boloto),
+                                        unfocusedIndicatorColor = colorResource(R.color.boloto),
+                                        focusedIndicatorColor = colorResource(R.color.boloto)
+                                    ),
+                                    textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 16.sp),
+                                    singleLine = true,
+                                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Search),
+                                    keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
+                                        keyboardController?.hide()
+                                    })
+                                )
+                                TextField(value = commentForLink,
+                                    onValueChange = { commentForLink = it },
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp)
+                                        .border(2.dp, colorResource(R.color.boloto), RoundedCornerShape(16.dp))
+                                        .focusRequester(focusRequester).onKeyEvent {
+                                        if (it.key == Key.Enter) {
                                             keyboardController?.hide()
-                                        })
-                                    )
+                                            true
+                                        } else {
+                                            false
+                                        }
+                                    },
+                                    placeholder = { Text(stringResource(R.string.enter_comment), color = colorResource(R.color.boloto)) },
+                                    trailingIcon = {  if (commentForLink.isNotEmpty()) {
+                                        Icon(Icons.Default.Close, contentDescription = "close",
+                                            tint = colorResource(R.color.boloto), modifier = Modifier.clickable {
+                                                commentForLink = ""
+                                                focusRequester.freeFocus()
+                                                keyboardController?.hide()
+                                            }
+                                        )
+                                    } },
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        containerColor = colorResource(R.color.white),
+                                        cursorColor = colorResource(R.color.boloto),
+                                        unfocusedIndicatorColor = colorResource(R.color.boloto),
+                                        focusedIndicatorColor = colorResource(R.color.boloto)
+                                    ),
+                                    textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 16.sp),
+                                    singleLine = true,
+                                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Search),
+                                    keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = {
+                                        keyboardController?.hide()
+                                    })
+                                )
                                 }
                             },
                             confirmButton = {
                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = colorResource(id = R.color.boloto)
-                                ), onClick = {
+                                    containerColor = colorResource(id = R.color.boloto)), onClick = {
                                     scope.launch {
-                                        parseThreeLinkAndSave(context = context, titleLink = titleLink, db = db,
+                                        parseOneLinkAndSave(context = context, titleLink = titleLink, db = db,
                                             scope = scope, onSuccess = {
                                                 showDialogAddNewLink.value = false
                                                 titleLink = ""
@@ -637,8 +619,7 @@ fun ThreeScreen(navController: NavController) {
                             },
                             dismissButton = {
                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = colorResource(id = R.color.boloto)
-                                ),
+                                    containerColor = colorResource(id = R.color.boloto)),
                                     onClick = { showDialogAddNewLink.value = false
                                         focusRequester.freeFocus()
                                         keyboardController?.hide()}) {
@@ -655,37 +636,31 @@ fun ThreeScreen(navController: NavController) {
                     if (showDialogLinkDeleteAll.value) {
                         AlertDialog(onDismissRequest = { showDialogLinkDeleteAll.value = false },
                             containerColor = colorResource(id = R.color.white),
-                            title = { androidx.compose.material.Text(
-                                stringResource(R.string.confirm),
+                            title = { androidx.compose.material.Text(stringResource(R.string.confirm),
                                 color = colorResource(id = R.color.boloto),
                                 fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             },
-                            text = { androidx.compose.material.Text(
-                                stringResource(R.string.delete_all_links),
-                                color = colorResource(id = R.color.boloto)
-                            )
+                            text = { androidx.compose.material.Text(stringResource(R.string.delete_all_links),
+                                color = colorResource(id = R.color.boloto))
                             },
                             confirmButton = {
                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = colorResource(id = R.color.boloto)
-                                ), onClick = {
-                                    scope.launch {
-                                        db.threeLinksDao().deleteAll()
-                                    }
-                                    focusRequester.freeFocus()
-                                    keyboardController?.hide()
-                                    showDialogLinkDeleteAll.value = false
-                                }) {
-                                    androidx.compose.material.Text(
-                                        stringResource(R.string.yes), color = colorResource(id = R.color.white),
+                                    containerColor = colorResource(id = R.color.boloto)), onClick = {
+                                        scope.launch {
+                                            db.oneLinksDao().deleteAll()
+                                        }
+                                        focusRequester.freeFocus()
+                                        keyboardController?.hide()
+                                        showDialogLinkDeleteAll.value = false
+                                    }) {
+                                    androidx.compose.material.Text(stringResource(R.string.yes), color = colorResource(id = R.color.white),
                                         fontSize = 16.sp
                                     )
                                 }
                             },
                             dismissButton = {
                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = colorResource(id = R.color.boloto)
-                                ),
+                                    containerColor = colorResource(id = R.color.boloto)),
                                     onClick = { showDialogLinkDeleteAll.value = false
                                         focusRequester.freeFocus()
                                         keyboardController?.hide()}) {
@@ -698,8 +673,7 @@ fun ThreeScreen(navController: NavController) {
                             focusRequester.freeFocus()
                             keyboardController?.hide()
                             panelStateLeft = PanelState.Hidden },
-                        tint = colorResource(R.color.white)
-                    )
+                        tint = colorResource(R.color.white))
                 }
                 LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 8.dp), state = listState) {
                     items(links){ item ->
@@ -729,107 +703,90 @@ fun ThreeScreen(navController: NavController) {
                                             var tempComment by remember { mutableStateOf(selectedEditItemLink?.comment ?: "") }
                                             AlertDialog(onDismissRequest = { showDialogLinkEditComment.value = false },
                                                 containerColor = colorResource(id = R.color.white),
-                                                title = { androidx.compose.material.Text(
-                                                    stringResource(R.string.confirm),
+                                                title = { androidx.compose.material.Text(stringResource(R.string.confirm),
                                                     color = colorResource(id = R.color.boloto),
                                                     fontSize = 20.sp, fontWeight = FontWeight.Bold)
                                                 },
                                                 text = {
                                                     OutlinedTextField(value = tempComment,
                                                         onValueChange = { tempComment = it },
-                                                        placeholder = {
-                                                            Text(
-                                                                stringResource(R.string.enter_comment), color = colorResource(
-                                                                    R.color.boloto)
-                                                            )
-                                                        },
+                                                        placeholder = {Text(stringResource(R.string.enter_comment), color = colorResource(R.color.boloto))},
                                                         trailingIcon = {  if (tempComment.isNotEmpty()) {
-                                                            Icon(
-                                                                Icons.Default.Close, contentDescription = "clear",
+                                                            Icon(Icons.Default.Close, contentDescription = "clear",
                                                                 tint = colorResource(R.color.boloto), modifier = Modifier.clickable {
                                                                     tempComment = ""
                                                                 }
                                                             )
                                                         } },
-                                                        textStyle = TextStyle(color = colorResource(
-                                                            R.color.boloto), fontSize = 20.sp),
+                                                        textStyle = TextStyle(color = colorResource(R.color.boloto), fontSize = 20.sp),
                                                         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp)
                                                             .border(2.dp, colorResource(R.color.boloto), RoundedCornerShape(16.dp)),
                                                         colors = TextFieldDefaults.outlinedTextFieldColors(
                                                             focusedBorderColor = colorResource(R.color.boloto),
                                                             unfocusedBorderColor = colorResource(R.color.boloto),
                                                             cursorColor = colorResource(R.color.boloto),
-                                                            focusedPlaceholderColor = colorResource(
-                                                                R.color.boloto),
-                                                            focusedTextColor = colorResource(R.color.boloto)
-                                                        ),
+                                                            focusedPlaceholderColor = colorResource(R.color.boloto),
+                                                            focusedTextColor = colorResource(R.color.boloto)),
                                                         shape = RoundedCornerShape(16.dp)
                                                     )
                                                 },
                                                 confirmButton = {
                                                     Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                                        containerColor = colorResource(id = R.color.boloto)
-                                                    ), onClick = {
+                                                        containerColor = colorResource(id = R.color.boloto)), onClick = {
                                                         scope.launch {
                                                             selectedEditItemLink?.let { it.comment = tempComment
-                                                                db.threeLinksDao().upsertLink(it)
+                                                                db.oneLinksDao().upsertLink(it)
                                                             }
                                                         }
                                                         focusRequester.freeFocus()
                                                         keyboardController?.hide()
                                                         showDialogLinkEditComment.value = false
                                                     }) {
-                                                        androidx.compose.material.Text(
-                                                            stringResource(R.string.yes), color = colorResource(id = R.color.white),
+                                                        androidx.compose.material.Text(stringResource(R.string.yes), color = colorResource(id = R.color.white),
                                                             fontSize = 16.sp
                                                         )
                                                     }
                                                 },
                                                 dismissButton = {
                                                     Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                                        containerColor = colorResource(id = R.color.boloto)
-                                                    ),
+                                                        containerColor = colorResource(id = R.color.boloto)),
                                                         onClick = { showDialogLinkEditComment.value = false
                                                             focusRequester.freeFocus()
                                                             keyboardController?.hide()}) {
-                                                        androidx.compose.material.Text(
-                                                            stringResource(R.string.cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
+                                                        androidx.compose.material.Text(stringResource(R.string.cancel), color = colorResource(id = R.color.white), fontSize = 16.sp)
                                                     }
                                                 })
                                         }
                                     }
                                     Image(painter = painterResource(R.drawable.share), contentDescription = "share",
-                                        modifier = Modifier.size(20.dp).offset(x = -16.dp).clickable {
-                                            val shareIntent = ShareCompat.IntentBuilder.from(context as Activity).setType("text/plain")
-                                                .setText(item.link)
-                                                .intent
-                                            context.startActivity(Intent.createChooser(shareIntent, null))
-                                        }
-                                    )
-                                    Image(painter = painterResource(R.drawable.delete), contentDescription = "deleteItem",
-                                        modifier = Modifier.size(20.dp).offset(x = -8.dp).clickable {
-                                            showDialogDeleteItemLink.value = true
-                                            selectedDeleteItemLink = item
-                                        }
-                                    )
+                                                 modifier = Modifier.size(20.dp).offset(x = -16.dp).clickable {
+                                                     val shareIntent = ShareCompat.IntentBuilder.from(context as Activity).setType("text/plain")
+                                                         .setText(item.link)
+                                                         .intent
+                                                     context.startActivity(Intent.createChooser(shareIntent, null))
+                                                 }
+                                     )
+                                     Image(painter = painterResource(R.drawable.delete), contentDescription = "deleteItem",
+                                                 modifier = Modifier.size(20.dp).offset(x = -8.dp).clickable {
+                                                     showDialogDeleteItemLink.value = true
+                                                     selectedDeleteItemLink = item
+                                                 }
+                                     )
                                     if (showDialogDeleteItemLink.value) {
                                         AlertDialog(onDismissRequest = { showDialogDeleteItemLink.value = false },
                                             containerColor = colorResource(id = R.color.white),
-                                            title = { androidx.compose.material.Text(
-                                                stringResource(R.string.confirm),
+                                            title = { androidx.compose.material.Text(stringResource(R.string.confirm),
                                                 color = colorResource(id = R.color.boloto), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                                             },
-                                            text = { Text(
-                                                stringResource(R.string.delete_link), color = colorResource(id = R.color.boloto),
-                                                fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                                            text = { Text(stringResource(R.string.delete_link), color = colorResource(id = R.color.boloto),
+                                                    fontSize = 16.sp, fontWeight = FontWeight.Bold)
                                             },
                                             confirmButton = {
                                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                                    containerColor = colorResource(id = R.color.boloto)
-                                                ), onClick = {
+                                                    containerColor = colorResource(id = R.color.boloto)), onClick = {
                                                     scope.launch {
                                                         selectedDeleteItemLink?.let {
-                                                            db.threeLinksDao().deleteLinks(it)
+                                                            db.oneLinksDao().deleteLinks(it)
                                                         }
                                                     }
                                                     showDialogDeleteItemLink.value = false
@@ -837,8 +794,7 @@ fun ThreeScreen(navController: NavController) {
                                             },
                                             dismissButton = {
                                                 Button(colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                                    containerColor = colorResource(id = R.color.boloto)
-                                                ),
+                                                    containerColor = colorResource(id = R.color.boloto)),
                                                     onClick = { showDialogDeleteItemLink.value = false
                                                         focusRequester.freeFocus()
                                                         keyboardController?.hide()}) {
@@ -848,9 +804,7 @@ fun ThreeScreen(navController: NavController) {
                                     }
                                 }
                                 AsyncImage(model = item.image, contentDescription = "playerphoto",
-                                    modifier = Modifier.fillMaxWidth().height(200.dp).padding(horizontal = 16.dp).clip(
-                                        RoundedCornerShape(16.dp)
-                                    )
+                                    modifier = Modifier.fillMaxWidth().height(200.dp).padding(horizontal = 16.dp).clip(RoundedCornerShape(16.dp))
                                         .aspectRatio(16f / 9f),
                                     placeholder = painterResource(R.drawable.noimage),
                                     error = painterResource(R.drawable.noimage),
@@ -913,10 +867,8 @@ fun ThreeScreen(navController: NavController) {
                 .border(1.dp, color = Color.Black, shape = CutCornerShape(topStart = 16.dp, bottomStart = 16.dp)).background( brush = Brush.linearGradient(
                     colors = listOf(colorResource(R.color.trboloto), colorResource(R.color.white)),
                     start = Offset(0f, 0f),
-                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                ),
-                    shape = CutCornerShape(topStart = 16.dp, bottomStart = 16.dp)
-                ),
+                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)),
+                shape = CutCornerShape(topStart = 16.dp, bottomStart = 16.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(modifier = Modifier.fillMaxWidth().padding(start = 24.dp, top = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -936,9 +888,9 @@ fun ThreeScreen(navController: NavController) {
                                 if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
                                     val imageToSave = selectedImageUri?.toString() ?: R.drawable.noimage.toString()
                                     val videoToSave = selectedRecipeVideo?.toString() ?: "video"
-                                    val recipe = Two(title = newTitleText, content = newContentText,
+                                    val recipe = One(title = newTitleText, content = newContentText,
                                         images = imageToSave, videos = videoToSave, id = selectedRecipeId)
-                                    scope.launch { db.twoDao().upsert(recipe) }
+                                    scope.launch { db.oneDao().upsert(recipe) }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
                                     panelStateRight = PanelState.Hidden
@@ -974,10 +926,8 @@ fun ThreeScreen(navController: NavController) {
                         )
                     } else if (selectedImageUri != null) {
                         Image(painter = rememberAsyncImagePainter(model = selectedImageUri,
-                            placeholder = painterResource(R.drawable.noimage), error = painterResource(
-                                R.drawable.noimage),
-                            fallback = painterResource(R.drawable.noimage)
-                        ),
+                            placeholder = painterResource(R.drawable.noimage), error = painterResource(R.drawable.noimage),
+                                fallback = painterResource(R.drawable.noimage)),
                             contentDescription = "playerphoto",
                             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).width(300.dp).height(180.dp)
                                 .clip(RoundedCornerShape(16.dp)), contentScale = ContentScale.Crop
@@ -1001,14 +951,11 @@ fun ThreeScreen(navController: NavController) {
                             }
                         },
                         placeholder = {
-                            Text(context.getString(R.string.enter_title_new_recipe), color = colorResource(
-                                R.color.boloto)
-                            )
+                            Text(context.getString(R.string.enter_title_new_recipe), color = colorResource(R.color.boloto))
                         },
                         trailingIcon = {
                             if (newTitleText.isNotEmpty()) {
-                                Icon(
-                                    Icons.Default.Close, contentDescription = "close",
+                                Icon(Icons.Default.Close, contentDescription = "close",
                                     tint = colorResource(R.color.boloto), modifier = Modifier.clickable { newTitleText = "" }
                                 )
                             }
@@ -1040,16 +987,13 @@ fun ThreeScreen(navController: NavController) {
                                 }
                             },
                         placeholder = {
-                            Text(context.getString(R.string.enter_content_new_recipe), color = colorResource(
-                                R.color.boloto)
-                            )
+                            Text(context.getString(R.string.enter_content_new_recipe), color = colorResource(R.color.boloto))
                         },
                         trailingIcon = { if (newContentText.isNotEmpty()) {
-                            Icon(
-                                Icons.Default.Close, contentDescription = "close",
-                                tint = colorResource(R.color.boloto), modifier = Modifier.clickable { newContentText = "" }
-                            )
-                        }
+                                Icon(Icons.Default.Close, contentDescription = "close",
+                                    tint = colorResource(R.color.boloto), modifier = Modifier.clickable { newContentText = "" }
+                                )
+                            }
                         },
                         shape = RoundedCornerShape(0.dp),
                         colors = TextFieldDefaults.textFieldColors(
@@ -1070,9 +1014,13 @@ fun ThreeScreen(navController: NavController) {
         }
     }
 }
-fun parseThreeLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
-                          onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<ThreeLinks>,
-                          setIsLoading: (Boolean) -> Unit) {
+enum class PanelState {
+    Hidden,
+    Expanded
+}
+fun parseOneLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
+                     onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<OneLinks>,
+                     setIsLoading: (Boolean) -> Unit) {
     if (!isNetworkAvailable(context)) {
         setIsLoading(false)
         scope.launch(Dispatchers.Main) {
@@ -1139,7 +1087,7 @@ fun parseThreeLinkAndSave(context: Context, titleLink: String, db: AppDatabase, 
             setIsLoading(false)
         }
         if (title.isNotEmpty() && textLink.isNotEmpty()) {
-            db.threeLinksDao().upsertLink(ThreeLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
+            db.oneLinksDao().upsertLink(OneLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
             withContext(Dispatchers.Main) {
                 onSuccess()
                 if (links.isNotEmpty()){
@@ -1153,3 +1101,22 @@ fun parseThreeLinkAndSave(context: Context, titleLink: String, db: AppDatabase, 
         }
     }
 }
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            else -> false
+        }
+    } else {
+        @Suppress("DEPRECATION")
+        val networkInfo = connectivityManager.activeNetworkInfo ?: return false
+        return networkInfo.isConnected
+    }
+}
+
+

@@ -9,12 +9,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.paraglan.coulinary.screens.MainScreen
 import com.paraglan.coulinary.screens.VideoScreen
-import com.paraglan.coulinary.screens.one.OneRecipeScreen
-import com.paraglan.coulinary.screens.one.OneScreen
-import com.paraglan.coulinary.screens.three.ThreeRecipeScreen
-import com.paraglan.coulinary.screens.three.ThreeScreen
-import com.paraglan.coulinary.screens.two.TwoRecipeScreen
-import com.paraglan.coulinary.screens.two.TwoScreen
+import com.paraglan.coulinary.screens.ones.five.FiveRecipeScreen
+import com.paraglan.coulinary.screens.ones.five.FiveScreen
+import com.paraglan.coulinary.screens.ones.four.FourRecipeScreen
+import com.paraglan.coulinary.screens.ones.four.FourScreen
+import com.paraglan.coulinary.screens.ones.one.OneRecipeScreen
+import com.paraglan.coulinary.screens.ones.one.OneScreen
+import com.paraglan.coulinary.screens.ones.three.ThreeRecipeScreen
+import com.paraglan.coulinary.screens.ones.three.ThreeScreen
+import com.paraglan.coulinary.screens.ones.two.TwoRecipeScreen
+import com.paraglan.coulinary.screens.ones.two.TwoScreen
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -24,7 +28,9 @@ fun NavGraphNavigate(context : Context, navController: NavHostController) {
         composable("MainScreen") { MainScreen(navController = navController) }
         composable("OneScreen") { OneScreen(navController = navController) }
         composable("TwoScreen") { TwoScreen(navController = navController) }
-        composable("ThreeScreen") { ThreeScreen(navController = navController) }
+        composable("ThreeScreen") { ThreeScreen(navController = navController)}
+        composable("FourScreen") { FourScreen(navController = navController)}
+        composable("FiveScreen") { FiveScreen(navController = navController)}
         composable(route = "OneRecipeScreen/{title}/{content}/{image}/{video}/{id}",
             arguments = listOf(
                 navArgument("title") { type = NavType.StringType },
@@ -71,6 +77,40 @@ fun NavGraphNavigate(context : Context, navController: NavHostController) {
             val id = backStackEntry.arguments?.getInt("id") ?: 0
             ThreeRecipeScreen(navController, title, content, image, video, id)
         }
+        composable(route = "FourRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            FourRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "FiveRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            FiveRecipeScreen(navController, title, content, image, video, id)
+        }
+
+
+
+
         composable(route = "VideoScreen/{video}/{title}/{id}/{key}",
             arguments = listOf(
                 navArgument("video") { type = NavType.StringType },
