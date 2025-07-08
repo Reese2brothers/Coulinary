@@ -3,7 +3,6 @@ package com.paraglan.coulinary.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
@@ -94,7 +93,6 @@ import com.paraglan.coulinary.database.Favourites
 import com.paraglan.coulinary.database.MainCategories
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("ContextCastToActivity", "CoroutineCreationDuringComposition")
@@ -136,7 +134,13 @@ fun MainScreen(navController: NavController){
         "thirtyone", "thirtytwo", "thirtythree", "thirtyfour", "thirtyfive", "thirtysix",
         "thirtyseven", "thirtyeight", "thirtynine", "forty", "fortyone", "fortytwo",
         "fortythree", "fortyfour", "fortyfive", "fortysix", "fortyseven",
-        "fortyeight", "fortynine", "fifty"
+        "fortyeight", "fortynine", "fifty", "fiftyone", "fiftytwo", "fiftythree", "fiftyfour", "fiftyfive",
+        "fiftysix", "fiftyseven", "fiftyeight", "fiftynine", "sixty", "sixtyone", "sixtytwo", "sixtythree",
+        "sixtyfour", "sixtyfive", "sixtysix", "sixtyseven", "sixtyeight", "sixtynine", "seventy", "seventyone",
+        "seventytwo", "seventythree", "seventyfour", "seventyfive", "seventysix", "seventyseven", "seventyeight",
+        "seventynine", "eighty", "eightyone", "eightytwo", "eightythree", "eightyfour", "eightyfive", "eightysix",
+        "eightyseven", "eightyeight", "eightynine", "ninety", "ninetyone", "ninetytwo", "ninetythree", "ninetyfour",
+        "ninetyfive", "ninetysix", "ninetyseven", "ninetyeight", "ninetynine", "hundred"
     )
 
     val listimages = listOf(R.drawable.gorshokkk, R.drawable.konhveti, R.drawable.lazania, R.drawable.lazaniatwo,
@@ -174,7 +178,8 @@ fun MainScreen(navController: NavController){
         R.drawable.marmelad, R.drawable.morkovpirog, R.drawable.ovoshnarezka, R.drawable.pechen,
         R.drawable.seledka, R.drawable.sharlotka, R.drawable.sloenka, R.drawable.sushi,
         R.drawable.sushitwo, R.drawable.tortdecor, R.drawable.tortdecortwo,
-        R.drawable.tortdecorthree, R.drawable.zharkoe
+        R.drawable.tortdecorthree, R.drawable.zharkoe, R.drawable.sallo, R.drawable.krugliebluda,
+        R.drawable.mnogoblud, R.drawable.razniebluda, R.drawable.potatoes
     )
     //выдвижная панель справа
     val panelWidth = 350.dp
