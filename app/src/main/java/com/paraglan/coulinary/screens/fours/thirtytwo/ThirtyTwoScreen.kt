@@ -1,4 +1,4 @@
-package com.paraglan.coulinary.screens.threes.twentytwo
+package com.paraglan.coulinary.screens.fours.thirtytwo
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -108,10 +108,8 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
-import com.paraglan.coulinary.database.TwentyTwo
-import com.paraglan.coulinary.database.TwentyTwoLinks
-import com.paraglan.coulinary.database.Two
-import com.paraglan.coulinary.database.TwoLinks
+import com.paraglan.coulinary.database.ThirtyTwo
+import com.paraglan.coulinary.database.ThirtyTwoLinks
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.PanelState
 import com.paraglan.coulinary.screens.ones.one.isNetworkAvailable
@@ -134,12 +132,12 @@ import java.util.concurrent.TimeUnit
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TwentyTwoScreen(navController: NavController) {
+fun ThirtyTwoScreen(navController: NavController) {
     var isSearchIconClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current as Activity
     val scope = rememberCoroutineScope()
     val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "database").build() }
-    val dairyList by db.twentyTwoDao().getAll().collectAsState(initial = emptyList())
+    val dairyList by db.thirtyTwoDao().getAll().collectAsState(initial = emptyList())
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     var searchText by remember { mutableStateOf("") }
@@ -155,8 +153,8 @@ fun TwentyTwoScreen(navController: NavController) {
     var selectedRecipeId by remember { mutableStateOf<Int>(0) }
     var selectedRecipeVideo by remember { mutableStateOf<Uri?>(null) }
 
-    val itemsFlow: Flow<List<TwentyTwoLinks>> = db.twentyTwoLinksDao().getAll()
-    val twentyTwolistFlow: Flow<List<TwentyTwo>> = db.twentyTwoDao().getAll()
+    val itemsFlow: Flow<List<ThirtyTwoLinks>> = db.thirtyTwoLinksDao().getAll()
+    val thirtyTwolistFlow: Flow<List<ThirtyTwo>> = db.thirtyTwoDao().getAll()
     val links by itemsFlow.collectAsState(initial = emptyList())
     val showDialogLinkDeleteAll = remember { mutableStateOf(false) }
     val showDialogAddNewLink = remember { mutableStateOf(false) }
@@ -164,10 +162,10 @@ fun TwentyTwoScreen(navController: NavController) {
     val showDialogLinkEditComment = remember { mutableStateOf(false) }
     var showDialogDeleteItemRecipe = remember { mutableStateOf(false) }
     var showDialogEditItemRecipe = remember { mutableStateOf(false) }
-    var selectedDeleteItemRecipe by remember { mutableStateOf<TwentyTwo?>(null) }
-    var selectedEditItemRecipe by remember { mutableStateOf<TwentyTwo?>(null) }
-    var selectedDeleteItemLink by remember { mutableStateOf<TwentyTwoLinks?>(null) }
-    var selectedEditItemLink by remember { mutableStateOf<TwentyTwoLinks?>(null) }
+    var selectedDeleteItemRecipe by remember { mutableStateOf<ThirtyTwo?>(null) }
+    var selectedEditItemRecipe by remember { mutableStateOf<ThirtyTwo?>(null) }
+    var selectedDeleteItemLink by remember { mutableStateOf<ThirtyTwoLinks?>(null) }
+    var selectedEditItemLink by remember { mutableStateOf<ThirtyTwoLinks?>(null) }
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -231,7 +229,7 @@ fun TwentyTwoScreen(navController: NavController) {
     }
     LaunchedEffect(key1 = bitmap) {
         if (bitmap != null) {
-            Log.d("TwoScreen", "LaunchedEffect bitmap: $bitmap")
+            Log.d("ThirtyTwoScreen", "LaunchedEffect bitmap: $bitmap")
         }
     }
 
@@ -301,17 +299,17 @@ fun TwentyTwoScreen(navController: NavController) {
             }
             LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp, bottom = 4.dp)) {
                 itemsIndexed(filteredList) {index, item ->
-                    Log.d("TAG", "TwentyTwoScreen item.image1: ${item.images}")
+                    Log.d("TAG", "ThirtyTwoScreen item.image1: ${item.images}")
                     Card(modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
                         .fillMaxWidth().height(120.dp).background(Color.Transparent).clickable {
                             if(item.images.isEmpty()){
                                 val encodedImageUri = R.drawable.noimage.toString()
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("TwentyTwoRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("ThirtyTwoRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             } else {
                                 val encodedImageUri = URLEncoder.encode(item.images, StandardCharsets.UTF_8.toString())
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("TwentyTwoRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("ThirtyTwoRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             }
 
                         },
@@ -360,7 +358,7 @@ fun TwentyTwoScreen(navController: NavController) {
                                         color = colorResource(id = R.color.boloto),
                                     )
                                     val isFavourite by produceState<Boolean>(initialValue = false, item.title) {
-                                        value = db.favouritesDao().isFavourite(item.title, "TwentyTwoRecipeScreen")
+                                        value = db.favouritesDao().isFavourite(item.title, "ThirtyTwoRecipeScreen")
                                     }
                                     Icon(painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else
                                         R.drawable.baseline_favorite_border_24),
@@ -448,7 +446,7 @@ fun TwentyTwoScreen(navController: NavController) {
                                                     val imageUrisToDelete = selectedDeleteItemRecipe?.images?.split(",")
                                                         ?.filter { it.isNotBlank() }
                                                         ?.map { Uri.parse(it) } ?: emptyList()
-                                                    selectedDeleteItemRecipe?.let { db.twentyTwoDao().delete(it) }
+                                                    selectedDeleteItemRecipe?.let { db.thirtyTwoDao().delete(it) }
                                                     imageUrisToDelete.forEach { imageUri ->
                                                         if (imageUri.scheme == "content") {
                                                             context.contentResolver.delete(imageUri, null, null)
@@ -625,7 +623,7 @@ fun TwentyTwoScreen(navController: NavController) {
                                     containerColor = colorResource(id = R.color.boloto)
                                 ), onClick = {
                                     scope.launch {
-                                        parseTwentyTwoLinkAndSave(context = context, titleLink = titleLink, db = db,
+                                        parseThirtyTwoLinkAndSave(context = context, titleLink = titleLink, db = db,
                                             scope = scope, onSuccess = {
                                                 showDialogAddNewLink.value = false
                                                 titleLink = ""
@@ -671,7 +669,7 @@ fun TwentyTwoScreen(navController: NavController) {
                                     containerColor = colorResource(id = R.color.boloto)
                                 ), onClick = {
                                     scope.launch {
-                                        db.twentyTwoLinksDao().deleteAll()
+                                        db.thirtyTwoLinksDao().deleteAll()
                                     }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
@@ -773,7 +771,7 @@ fun TwentyTwoScreen(navController: NavController) {
                                                     ), onClick = {
                                                         scope.launch {
                                                             selectedEditItemLink?.let { it.comment = tempComment
-                                                                db.twentyTwoLinksDao().upsertLink(it)
+                                                                db.thirtyTwoLinksDao().upsertLink(it)
                                                             }
                                                         }
                                                         focusRequester.freeFocus()
@@ -830,7 +828,7 @@ fun TwentyTwoScreen(navController: NavController) {
                                                 ), onClick = {
                                                     scope.launch {
                                                         selectedDeleteItemLink?.let {
-                                                            db.twentyTwoLinksDao().deleteLinks(it)
+                                                            db.thirtyTwoLinksDao().deleteLinks(it)
                                                         }
                                                     }
                                                     showDialogDeleteItemLink.value = false
@@ -937,9 +935,9 @@ fun TwentyTwoScreen(navController: NavController) {
                                 if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
                                     val imageToSave = selectedImageUri?.toString() ?: R.drawable.noimage.toString()
                                     val videoToSave = selectedRecipeVideo?.toString() ?: "video"
-                                    val recipe = TwentyTwo(title = newTitleText, content = newContentText,
+                                    val recipe = ThirtyTwo(title = newTitleText, content = newContentText,
                                         images = imageToSave, videos = videoToSave, id = selectedRecipeId)
-                                    scope.launch { db.twentyTwoDao().upsert(recipe) }
+                                    scope.launch { db.thirtyTwoDao().upsert(recipe) }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
                                     panelStateRight = PanelState.Hidden
@@ -1071,8 +1069,8 @@ fun TwentyTwoScreen(navController: NavController) {
         }
     }
 }
-fun parseTwentyTwoLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
-                        onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<TwentyTwoLinks>,
+fun parseThirtyTwoLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
+                        onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<ThirtyTwoLinks>,
                         setIsLoading: (Boolean) -> Unit) {
     if (!isNetworkAvailable(context)) {
         setIsLoading(false)
@@ -1140,7 +1138,7 @@ fun parseTwentyTwoLinkAndSave(context: Context, titleLink: String, db: AppDataba
             setIsLoading(false)
         }
         if (title.isNotEmpty() && textLink.isNotEmpty()) {
-            db.twentyTwoLinksDao().upsertLink(TwentyTwoLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
+            db.thirtyTwoLinksDao().upsertLink(ThirtyTwoLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
             withContext(Dispatchers.Main) {
                 onSuccess()
                 if (links.isNotEmpty()){

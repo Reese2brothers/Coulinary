@@ -9,6 +9,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.paraglan.coulinary.screens.MainScreen
 import com.paraglan.coulinary.screens.VideoScreen
+import com.paraglan.coulinary.screens.fours.thirtyone.ThirtyOneRecipeScreen
+import com.paraglan.coulinary.screens.fours.thirtyone.ThirtyOneScreen
+import com.paraglan.coulinary.screens.fours.thirtytwo.ThirtyTwoRecipeScreen
+import com.paraglan.coulinary.screens.fours.thirtytwo.ThirtyTwoScreen
 import com.paraglan.coulinary.screens.ones.eight.EightRecipeScreen
 import com.paraglan.coulinary.screens.ones.eight.EightScreen
 import com.paraglan.coulinary.screens.ones.five.FiveRecipeScreen
@@ -29,10 +33,16 @@ import com.paraglan.coulinary.screens.ones.three.ThreeRecipeScreen
 import com.paraglan.coulinary.screens.ones.three.ThreeScreen
 import com.paraglan.coulinary.screens.ones.two.TwoRecipeScreen
 import com.paraglan.coulinary.screens.ones.two.TwoScreen
+import com.paraglan.coulinary.screens.threes.thirty.ThirtyRecipeScreen
+import com.paraglan.coulinary.screens.threes.thirty.ThirtyScreen
+import com.paraglan.coulinary.screens.threes.twentyeight.TwentyEightRecipeScreen
+import com.paraglan.coulinary.screens.threes.twentyeight.TwentyEightScreen
 import com.paraglan.coulinary.screens.threes.twentyfive.TwentyFiveRecipeScreen
 import com.paraglan.coulinary.screens.threes.twentyfive.TwentyFiveScreen
 import com.paraglan.coulinary.screens.threes.twentyfour.TwentyFourRecipeScreen
 import com.paraglan.coulinary.screens.threes.twentyfour.TwentyFourScreen
+import com.paraglan.coulinary.screens.threes.twentynine.TwentyNineRecipeScreen
+import com.paraglan.coulinary.screens.threes.twentynine.TwentyNineScreen
 import com.paraglan.coulinary.screens.twos.eightteen.EighteenRecipeScreen
 import com.paraglan.coulinary.screens.twos.eightteen.EighteenScreen
 import com.paraglan.coulinary.screens.twos.eleven.ElevenRecipeScreen
@@ -97,6 +107,11 @@ fun NavGraphNavigate(context : Context, navController: NavHostController) {
         composable("TwentyFiveScreen") { TwentyFiveScreen(navController = navController)}
         composable("TwentySixScreen") { TwentySixScreen(navController = navController)}
         composable("TwentySevenScreen") { TwentySevenScreen(navController = navController)}
+        composable("TwentyEightScreen") { TwentyEightScreen(navController = navController)}
+        composable("TwentyNineScreen") { TwentyNineScreen(navController = navController)}
+        composable("ThirtyScreen") { ThirtyScreen(navController = navController)}
+        composable("ThirtyOneScreen") { ThirtyOneScreen(navController = navController)}
+        composable("ThirtyTwoScreen") { ThirtyTwoScreen(navController = navController)}
 
 
         composable(route = "OneRecipeScreen/{title}/{content}/{image}/{video}/{id}",
@@ -504,6 +519,81 @@ fun NavGraphNavigate(context : Context, navController: NavHostController) {
             val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
             val id = backStackEntry.arguments?.getInt("id") ?: 0
             TwentySevenRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "TwentyEightRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            TwentyEightRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "TwentyNineRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            TwentyNineRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "ThirtyRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            ThirtyRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "ThirtyOneRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            ThirtyOneRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "ThirtyTwoRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            ThirtyTwoRecipeScreen(navController, title, content, image, video, id)
         }
 
 
