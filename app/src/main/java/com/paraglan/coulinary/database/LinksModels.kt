@@ -355,7 +355,7 @@ data class ThirtyNineLinks(
 )
 
 @Entity
-data class FortyLinks(
+data class FourtyLinks(
     val title: String,
     val link: String,
     val image: String,
@@ -364,7 +364,7 @@ data class FortyLinks(
 )
 
 @Entity
-data class FortyOneLinks(
+data class FourtyOneLinks(
     val title: String,
     val link: String,
     val image: String,
@@ -373,7 +373,7 @@ data class FortyOneLinks(
 )
 
 @Entity
-data class FortyTwoLinks(
+data class FourtyTwoLinks(
     val title: String,
     val link: String,
     val image: String,
@@ -382,7 +382,7 @@ data class FortyTwoLinks(
 )
 
 @Entity
-data class FortyThreeLinks(
+data class FourtyThreeLinks(
     val title: String,
     val link: String,
     val image: String,
@@ -391,7 +391,7 @@ data class FortyThreeLinks(
 )
 
 @Entity
-data class FortyFourLinks(
+data class FourtyFourLinks(
     val title: String,
     val link: String,
     val image: String,
@@ -400,7 +400,7 @@ data class FortyFourLinks(
 )
 
 @Entity
-data class FortyFiveLinks(
+data class FourtyFiveLinks(
     val title: String,
     val link: String,
     val image: String,
@@ -409,7 +409,7 @@ data class FortyFiveLinks(
 )
 
 @Entity
-data class FortySixLinks(
+data class FourtySixLinks(
     val title: String,
     val link: String,
     val image: String,
@@ -418,7 +418,7 @@ data class FortySixLinks(
 )
 
 @Entity
-data class FortySevenLinks(
+data class FourtySevenLinks(
     val title: String,
     val link: String,
     val image: String,
@@ -427,7 +427,7 @@ data class FortySevenLinks(
 )
 
 @Entity
-data class FortyEightLinks(
+data class FourtyEightLinks(
     val title: String,
     val link: String,
     val image: String,
@@ -436,7 +436,7 @@ data class FortyEightLinks(
 )
 
 @Entity
-data class FortyNineLinks(
+data class FourtyNineLinks(
     val title: String,
     val link: String,
     val image: String,

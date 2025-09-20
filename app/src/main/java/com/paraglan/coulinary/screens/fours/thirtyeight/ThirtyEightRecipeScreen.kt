@@ -1,4 +1,4 @@
-package com.paraglan.coulinary.screens.fours.thirtythree
+package com.paraglan.coulinary.screens.fours.thirtyeight
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -89,8 +89,7 @@ import coil.compose.AsyncImage
 import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
 import com.paraglan.coulinary.database.Favourites
-import com.paraglan.coulinary.database.ThirtyThree
-import com.paraglan.coulinary.database.Two
+import com.paraglan.coulinary.database.ThirtyEight
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.ones.one.PanelState
 import com.paraglan.coulinary.screens.saveImageToFile2
@@ -107,7 +106,7 @@ import java.nio.charset.StandardCharsets
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun ThirtyThreeRecipeScreen(navController: NavController, title: String, content: String, image: String, videos: String, id: Int) {
+fun ThirtyEightRecipeScreen(navController: NavController, title: String, content: String, image: String, videos: String, id: Int) {
     val decTitle = URLDecoder.decode(title, StandardCharsets.UTF_8.toString())
     val decContent = URLDecoder.decode(content, StandardCharsets.UTF_8.toString())
     var panelState by remember { mutableStateOf(PanelState.Hidden) }
@@ -120,7 +119,7 @@ fun ThirtyThreeRecipeScreen(navController: NavController, title: String, content
     var launchPhotoPicker: () -> Unit = {}
     var listsImage = remember { mutableStateListOf<String>() }
     var listsVideo = remember { mutableStateListOf<String>() }
-    Log.d("TAG", "ThirtyThreeRecipeScreenVideo: $listsVideo")
+    Log.d("TAG", "ThirtyEightRecipeScreenVideo: $listsVideo")
 
     var selectedImage by remember { mutableStateOf("") }
     var isCamera by remember { mutableStateOf(false) }
@@ -355,28 +354,28 @@ fun ThirtyThreeRecipeScreen(navController: NavController, title: String, content
         }
     }
     LaunchedEffect(key1 = text) {
-        tints = db.favouritesDao().isFavourite(text, "ThirtyThreeRecipeScreen")
+        tints = db.favouritesDao().isFavourite(text, "ThirtyEightRecipeScreen")
     }
     LaunchedEffect(key1 = listsImage) {
         withContext(Dispatchers.IO) {
-            val imagesString = db.thirtyThreeDao().getImagesByTitle(title) ?: ""
+            val imagesString = db.thirtyEightDao().getImagesByTitle(title) ?: ""
             if (imagesString.isNotEmpty()) {
                 val imagesList = imagesString.split(",").map { it.trim() }
                 listsImage.addAll(imagesList)
                 if (listsImage.isNotEmpty()){
                     selectedImage = listsImage[0]
                 }
-                Log.d("TAG", "ThirtyThreeRecipeScreen: $listsImage")
+                Log.d("TAG", "ThirtyEightRecipeScreen: $listsImage")
             }
         }
     }
     LaunchedEffect(key1 = listsVideo) {
         withContext(Dispatchers.IO) {
-            val videoString = db.thirtyThreeDao().getVideosByTitle(title) ?: ""
+            val videoString = db.thirtyEightDao().getVideosByTitle(title) ?: ""
             if (videoString.isNotEmpty()) {
                 val videosList = videoString.split(",").map { it.trim() }
                 listsVideo.addAll(videosList)
-                Log.d("TAG", "ThirtyThreeRecipeScreen: $listsVideo")
+                Log.d("TAG", "ThirtyEightRecipeScreen: $listsVideo")
             }
         }
     }
@@ -430,7 +429,7 @@ fun ThirtyThreeRecipeScreen(navController: NavController, title: String, content
         val distinctImages = images.distinct()
         val imagessString = distinctImages.joinToString(",")
         scope.launch {
-            db.thirtyThreeDao().updateImages(id, imagessString)
+            db.thirtyEightDao().updateImages(id, imagessString)
         }
     }
     if (showImagePicker) {
@@ -505,7 +504,7 @@ fun ThirtyThreeRecipeScreen(navController: NavController, title: String, content
                 verticalAlignment = Alignment.CenterVertically){
                 Image(painter = painterResource(R.drawable.edit), contentDescription = "edit",
                     modifier = Modifier.size(30.dp).clickable {
-                        if(tints) { scope.launch { db.favouritesDao().deleteFavourite(text, "ThirtyThreeRecipeScreen") } }
+                        if(tints) { scope.launch { db.favouritesDao().deleteFavourite(text, "ThirtyEightRecipeScreen") } }
                         showDialogEditRecipe.value = true
                     }
                 )
@@ -576,11 +575,11 @@ fun ThirtyThreeRecipeScreen(navController: NavController, title: String, content
                                 containerColor = colorResource(id = R.color.boloto)
                             ), onClick = {
                                 scope.launch {
-                                    db.thirtyThreeDao().upsert(
-                                        ThirtyThree(title = text, content = text2,
+                                    db.thirtyEightDao().upsert(
+                                        ThirtyEight(title = text, content = text2,
                                             images = listsImage.joinToString(","), videos = videos, id = id)
                                     )
-                                    if(!tints){ db.favouritesDao().insertFavourites(Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "TwohirtyThreeRecipeScreen")) }
+                                    if(!tints){ db.favouritesDao().insertFavourites(Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "ThirtyEightRecipeScreen")) }
                                 }
                                 showDialogEditRecipe.value = false
                             }) {
@@ -605,10 +604,10 @@ fun ThirtyThreeRecipeScreen(navController: NavController, title: String, content
                     modifier = Modifier.size(30.dp).clickable {
                         scope.launch {
                             if (tints) {
-                                db.favouritesDao().deleteFavourite(text, "ThirtyThreeRecipeScreen")
+                                db.favouritesDao().deleteFavourite(text, "ThirtyEightRecipeScreen")
                             } else {
                                 db.favouritesDao().insertFavourites(
-                                    Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "ThirtyThreeRecipeScreen")
+                                    Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "ThirtyEightRecipeScreen")
                                 )
                             }
                             tints = !tints
@@ -738,7 +737,7 @@ fun ThirtyThreeRecipeScreen(navController: NavController, title: String, content
                                 modifiedList.add("video")
                             }
                             val encodedList = modifiedList.joinToString(",") { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }
-                            navController.navigate("VideoScreen/$encodedList/$text/$id/ThirtyThreeRecipeScreen")
+                            navController.navigate("VideoScreen/$encodedList/$text/$id/ThirtyEightRecipeScreen")
                             Log.d("TAG", "VideoScreenEncodedList: $encodedList")
                         }
                 )

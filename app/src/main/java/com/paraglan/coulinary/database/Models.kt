@@ -375,7 +375,7 @@ data class ThirtyNine(
 )
 
 @Entity
-data class Forty(
+data class Fourty(
     val title: String,
     val content: String,
     val images: String,
@@ -384,7 +384,7 @@ data class Forty(
 )
 
 @Entity
-data class FortyOne(
+data class FourtyOne(
     val title: String,
     val content: String,
     val images: String,
@@ -393,7 +393,7 @@ data class FortyOne(
 )
 
 @Entity
-data class FortyTwo(
+data class FourtyTwo(
     val title: String,
     val content: String,
     val images: String,
@@ -402,7 +402,7 @@ data class FortyTwo(
 )
 
 @Entity
-data class FortyThree(
+data class FourtyThree(
     val title: String,
     val content: String,
     val images: String,
@@ -411,7 +411,7 @@ data class FortyThree(
 )
 
 @Entity
-data class FortyFour(
+data class FourtyFour(
     val title: String,
     val content: String,
     val images: String,
@@ -420,7 +420,7 @@ data class FortyFour(
 )
 
 @Entity
-data class FortyFive(
+data class FourtyFive(
     val title: String,
     val content: String,
     val images: String,
@@ -429,7 +429,7 @@ data class FortyFive(
 )
 
 @Entity
-data class FortySix(
+data class FourtySix(
     val title: String,
     val content: String,
     val images: String,
@@ -438,7 +438,7 @@ data class FortySix(
 )
 
 @Entity
-data class FortySeven(
+data class FourtySeven(
     val title: String,
     val content: String,
     val images: String,
@@ -447,7 +447,7 @@ data class FortySeven(
 )
 
 @Entity
-data class FortyEight(
+data class FourtyEight(
     val title: String,
     val content: String,
     val images: String,
@@ -456,7 +456,7 @@ data class FortyEight(
 )
 
 @Entity
-data class FortyNine(
+data class FourtyNine(
     val title: String,
     val content: String,
     val images: String,

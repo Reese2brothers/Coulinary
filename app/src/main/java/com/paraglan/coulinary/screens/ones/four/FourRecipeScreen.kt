@@ -358,7 +358,7 @@ fun FourRecipeScreen(navController: NavController, title: String, content: Strin
     }
     LaunchedEffect(key1 = listsImage) {
         withContext(Dispatchers.IO) {
-            val imagesString = db.twoDao().getImagesByTitle(title) ?: ""
+            val imagesString = db.fourDao().getImagesByTitle(title) ?: ""
             if (imagesString.isNotEmpty()) {
                 val imagesList = imagesString.split(",").map { it.trim() }
                 listsImage.addAll(imagesList)

@@ -693,182 +693,182 @@ interface ThirtyNineLinksDao {
 }
 
 @Dao
-interface FortyLinksDao {
-    @Query("SELECT * FROM fortyLinks")
-    fun getAll(): Flow<List<FortyLinks>>
+interface FourtyLinksDao {
+    @Query("SELECT * FROM fourtyLinks")
+    fun getAll(): Flow<List<FourtyLinks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortyLinks: FortyLinks)
+    suspend fun insertLinks(fortyLinks: FourtyLinks)
 
     @Delete
-    suspend fun deleteLinks(fortyLinks: FortyLinks)
+    suspend fun deleteLinks(fortyLinks: FourtyLinks)
 
-    @Query("DELETE FROM fortyLinks")
+    @Query("DELETE FROM fourtyLinks")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertLink(fortyLinks: FortyLinks)
+    suspend fun upsertLink(fortyLinks: FourtyLinks)
 }
 @Dao
-interface FortyOneLinksDao {
-    @Query("SELECT * FROM fortyOneLinks")
-    fun getAll(): Flow<List<FortyOneLinks>>
+interface FourtyOneLinksDao {
+    @Query("SELECT * FROM fourtyOneLinks")
+    fun getAll(): Flow<List<FourtyOneLinks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortyOneLinks: FortyOneLinks)
+    suspend fun insertLinks(fortyOneLinks: FourtyOneLinks)
 
     @Delete
-    suspend fun deleteLinks(fortyOneLinks: FortyOneLinks)
+    suspend fun deleteLinks(fortyOneLinks: FourtyOneLinks)
 
-    @Query("DELETE FROM fortyOneLinks")
+    @Query("DELETE FROM fourtyOneLinks")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertLink(fortyOneLinks: FortyOneLinks)
-}
-
-@Dao
-interface FortyTwoLinksDao {
-    @Query("SELECT * FROM fortyTwoLinks")
-    fun getAll(): Flow<List<FortyTwoLinks>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortyTwoLinks: FortyTwoLinks)
-
-    @Delete
-    suspend fun deleteLinks(fortyTwoLinks: FortyTwoLinks)
-
-    @Query("DELETE FROM fortyTwoLinks")
-    suspend fun deleteAll()
-
-    @Upsert
-    suspend fun upsertLink(fortyTwoLinks: FortyTwoLinks)
+    suspend fun upsertLink(fortyOneLinks: FourtyOneLinks)
 }
 
 @Dao
-interface FortyThreeLinksDao {
-    @Query("SELECT * FROM fortyThreeLinks")
-    fun getAll(): Flow<List<FortyThreeLinks>>
+interface FourtyTwoLinksDao {
+    @Query("SELECT * FROM fourtyTwoLinks")
+    fun getAll(): Flow<List<FourtyTwoLinks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortyThreeLinks: FortyThreeLinks)
+    suspend fun insertLinks(fortyTwoLinks: FourtyTwoLinks)
 
     @Delete
-    suspend fun deleteLinks(fortyThreeLinks: FortyThreeLinks)
+    suspend fun deleteLinks(fortyTwoLinks: FourtyTwoLinks)
 
-    @Query("DELETE FROM fortyThreeLinks")
+    @Query("DELETE FROM fourtyTwoLinks")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertLink(fortyThreeLinks: FortyThreeLinks)
+    suspend fun upsertLink(fortyTwoLinks: FourtyTwoLinks)
 }
 
 @Dao
-interface FortyFourLinksDao {
-    @Query("SELECT * FROM fortyFourLinks")
-    fun getAll(): Flow<List<FortyFourLinks>>
+interface FourtyThreeLinksDao {
+    @Query("SELECT * FROM fourtyThreeLinks")
+    fun getAll(): Flow<List<FourtyThreeLinks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortyFourLinks: FortyFourLinks)
+    suspend fun insertLinks(fortyThreeLinks: FourtyThreeLinks)
 
     @Delete
-    suspend fun deleteLinks(fortyFourLinks: FortyFourLinks)
+    suspend fun deleteLinks(fortyThreeLinks: FourtyThreeLinks)
 
-    @Query("DELETE FROM fortyFourLinks")
+    @Query("DELETE FROM fourtyThreeLinks")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertLink(fortyFourLinks: FortyFourLinks)
+    suspend fun upsertLink(fortyThreeLinks: FourtyThreeLinks)
 }
 
 @Dao
-interface FortyFiveLinksDao {
-    @Query("SELECT * FROM fortyFiveLinks")
-    fun getAll(): Flow<List<FortyFiveLinks>>
+interface FourtyFourLinksDao {
+    @Query("SELECT * FROM fourtyFourLinks")
+    fun getAll(): Flow<List<FourtyFourLinks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortyFiveLinks: FortyFiveLinks)
+    suspend fun insertLinks(fortyFourLinks: FourtyFourLinks)
 
     @Delete
-    suspend fun deleteLinks(fortyFiveLinks: FortyFiveLinks)
+    suspend fun deleteLinks(fortyFourLinks: FourtyFourLinks)
 
-    @Query("DELETE FROM fortyFiveLinks")
+    @Query("DELETE FROM fourtyFourLinks")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertLink(fortyFiveLinks: FortyFiveLinks)
+    suspend fun upsertLink(fortyFourLinks: FourtyFourLinks)
 }
 
 @Dao
-interface FortySixLinksDao {
-    @Query("SELECT * FROM fortySixLinks")
-    fun getAll(): Flow<List<FortySixLinks>>
+interface FourtyFiveLinksDao {
+    @Query("SELECT * FROM fourtyFiveLinks")
+    fun getAll(): Flow<List<FourtyFiveLinks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortySixLinks: FortySixLinks)
+    suspend fun insertLinks(fortyFiveLinks: FourtyFiveLinks)
 
     @Delete
-    suspend fun deleteLinks(fortySixLinks: FortySixLinks)
+    suspend fun deleteLinks(fortyFiveLinks: FourtyFiveLinks)
 
-    @Query("DELETE FROM fortySixLinks")
+    @Query("DELETE FROM fourtyFiveLinks")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertLink(fortySixLinks: FortySixLinks)
+    suspend fun upsertLink(fortyFiveLinks: FourtyFiveLinks)
 }
 
 @Dao
-interface FortySevenLinksDao {
-    @Query("SELECT * FROM fortySevenLinks")
-    fun getAll(): Flow<List<FortySevenLinks>>
+interface FourtySixLinksDao {
+    @Query("SELECT * FROM fourtySixLinks")
+    fun getAll(): Flow<List<FourtySixLinks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortySevenLinks: FortySevenLinks)
+    suspend fun insertLinks(fortySixLinks: FourtySixLinks)
 
     @Delete
-    suspend fun deleteLinks(fortySevenLinks: FortySevenLinks)
+    suspend fun deleteLinks(fortySixLinks: FourtySixLinks)
 
-    @Query("DELETE FROM fortySevenLinks")
+    @Query("DELETE FROM fourtySixLinks")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertLink(fortySevenLinks: FortySevenLinks)
+    suspend fun upsertLink(fortySixLinks: FourtySixLinks)
 }
 
 @Dao
-interface FortyEightLinksDao {
-    @Query("SELECT * FROM fortyEightLinks")
-    fun getAll(): Flow<List<FortyEightLinks>>
+interface FourtySevenLinksDao {
+    @Query("SELECT * FROM fourtySevenLinks")
+    fun getAll(): Flow<List<FourtySevenLinks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortyEightLinks: FortyEightLinks)
+    suspend fun insertLinks(fortySevenLinks: FourtySevenLinks)
 
     @Delete
-    suspend fun deleteLinks(fortyEightLinks: FortyEightLinks)
+    suspend fun deleteLinks(fortySevenLinks: FourtySevenLinks)
 
-    @Query("DELETE FROM fortyEightLinks")
+    @Query("DELETE FROM fourtySevenLinks")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertLink(fortyEightLinks: FortyEightLinks)
+    suspend fun upsertLink(fortySevenLinks: FourtySevenLinks)
 }
 
 @Dao
-interface FortyNineLinksDao {
-    @Query("SELECT * FROM fortyNineLinks")
-    fun getAll(): Flow<List<FortyNineLinks>>
+interface FourtyEightLinksDao {
+    @Query("SELECT * FROM fourtyEightLinks")
+    fun getAll(): Flow<List<FourtyEightLinks>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLinks(fortyNineLinks: FortyNineLinks)
+    suspend fun insertLinks(fortyEightLinks: FourtyEightLinks)
 
     @Delete
-    suspend fun deleteLinks(fortyNineLinks: FortyNineLinks)
+    suspend fun deleteLinks(fortyEightLinks: FourtyEightLinks)
 
-    @Query("DELETE FROM fortyNineLinks")
+    @Query("DELETE FROM fourtyEightLinks")
     suspend fun deleteAll()
 
     @Upsert
-    suspend fun upsertLink(fortyNineLinks: FortyNineLinks)
+    suspend fun upsertLink(fortyEightLinks: FourtyEightLinks)
+}
+
+@Dao
+interface FourtyNineLinksDao {
+    @Query("SELECT * FROM fourtyNineLinks")
+    fun getAll(): Flow<List<FourtyNineLinks>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLinks(fortyNineLinks: FourtyNineLinks)
+
+    @Delete
+    suspend fun deleteLinks(fortyNineLinks: FourtyNineLinks)
+
+    @Query("DELETE FROM fourtyNineLinks")
+    suspend fun deleteAll()
+
+    @Upsert
+    suspend fun upsertLink(fortyNineLinks: FourtyNineLinks)
 }
 
 @Dao

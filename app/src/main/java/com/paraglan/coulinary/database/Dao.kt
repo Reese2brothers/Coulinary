@@ -1457,360 +1457,360 @@ interface ThirtyNineDao {
 }
 
 @Dao
-interface FortyDao {
-    @Query("SELECT * FROM forty")
-    fun getAll(): Flow<List<Forty>>
+interface FourtyDao {
+    @Query("SELECT * FROM fourty")
+    fun getAll(): Flow<List<Fourty>>
 
     @Upsert
-    suspend fun upsert(forty: Forty)
+    suspend fun upsert(forty: Fourty)
 
     @Delete
-    suspend fun delete(forty: Forty)
+    suspend fun delete(forty: Fourty)
 
-    @Query("DELETE FROM forty")
+    @Query("DELETE FROM fourty")
     suspend fun deleteAll()
 
-    @Query("SELECT images FROM forty WHERE title = :title")
+    @Query("SELECT images FROM fourty WHERE title = :title")
     suspend fun getImagesByTitle(title: String): String?
 
-    @Query("UPDATE forty SET images = :images WHERE id = :id")
+    @Query("UPDATE fourty SET images = :images WHERE id = :id")
     suspend fun updateImages(id: Int, images: String)
 
-    @Query("SELECT * FROM forty")
-    suspend fun getAllImages(): List<Forty>
+    @Query("SELECT * FROM fourty")
+    suspend fun getAllImages(): List<Fourty>
 
-    @Query("UPDATE forty SET videos = :videos WHERE id = :id")
+    @Query("UPDATE fourty SET videos = :videos WHERE id = :id")
     suspend fun updateVideos(id: Int, videos: String)
 
-    @Query("SELECT videos FROM forty WHERE title = :title")
+    @Query("SELECT videos FROM fourty WHERE title = :title")
     suspend fun getVideosByTitle(title: String): String?
 
-    @Query("UPDATE forty SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    @Query("UPDATE fourty SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
     suspend fun appendVideo(id: Int, newVideo: String)
 
-    @Query("SELECT COUNT(*) FROM forty WHERE title = :title")
+    @Query("SELECT COUNT(*) FROM fourty WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
 }
 @Dao
-interface FortyOneDao {
-    @Query("SELECT * FROM fortyOne")
-    fun getAll(): Flow<List<FortyOne>>
+interface FourtyOneDao {
+    @Query("SELECT * FROM fourtyOne")
+    fun getAll(): Flow<List<FourtyOne>>
 
     @Upsert
-    suspend fun upsert(fortyOne: FortyOne)
+    suspend fun upsert(fortyOne: FourtyOne)
 
     @Delete
-    suspend fun delete(fortyOne: FortyOne)
+    suspend fun delete(fortyOne: FourtyOne)
 
-    @Query("DELETE FROM fortyOne")
+    @Query("DELETE FROM fourtyOne")
     suspend fun deleteAll()
 
-    @Query("SELECT images FROM fortyOne WHERE title = :title")
+    @Query("SELECT images FROM fourtyOne WHERE title = :title")
     suspend fun getImagesByTitle(title: String): String?
 
-    @Query("UPDATE fortyOne SET images = :images WHERE id = :id")
+    @Query("UPDATE fourtyOne SET images = :images WHERE id = :id")
     suspend fun updateImages(id: Int, images: String)
 
-    @Query("SELECT * FROM fortyOne")
-    suspend fun getAllImages(): List<FortyOne>
+    @Query("SELECT * FROM fourtyOne")
+    suspend fun getAllImages(): List<FourtyOne>
 
-    @Query("UPDATE fortyOne SET videos = :videos WHERE id = :id")
+    @Query("UPDATE fourtyOne SET videos = :videos WHERE id = :id")
     suspend fun updateVideos(id: Int, videos: String)
 
-    @Query("SELECT videos FROM fortyOne WHERE title = :title")
+    @Query("SELECT videos FROM fourtyOne WHERE title = :title")
     suspend fun getVideosByTitle(title: String): String?
 
-    @Query("UPDATE fortyOne SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    @Query("UPDATE fourtyOne SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
     suspend fun appendVideo(id: Int, newVideo: String)
 
-    @Query("SELECT COUNT(*) FROM fortyOne WHERE title = :title")
-    suspend fun getVideoCountByTitle(title: String): Int
-}
-
-@Dao
-interface FortyTwoDao {
-    @Query("SELECT * FROM fortyTwo")
-    fun getAll(): Flow<List<FortyTwo>>
-
-    @Upsert
-    suspend fun upsert(fortyTwo: FortyTwo)
-
-    @Delete
-    suspend fun delete(fortyTwo: FortyTwo)
-
-    @Query("DELETE FROM fortyTwo")
-    suspend fun deleteAll()
-
-    @Query("SELECT images FROM fortyTwo WHERE title = :title")
-    suspend fun getImagesByTitle(title: String): String?
-
-    @Query("UPDATE fortyTwo SET images = :images WHERE id = :id")
-    suspend fun updateImages(id: Int, images: String)
-
-    @Query("SELECT * FROM fortyTwo")
-    suspend fun getAllImages(): List<FortyTwo>
-
-    @Query("UPDATE fortyTwo SET videos = :videos WHERE id = :id")
-    suspend fun updateVideos(id: Int, videos: String)
-
-    @Query("SELECT videos FROM fortyTwo WHERE title = :title")
-    suspend fun getVideosByTitle(title: String): String?
-
-    @Query("UPDATE fortyTwo SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
-    suspend fun appendVideo(id: Int, newVideo: String)
-
-    @Query("SELECT COUNT(*) FROM fortyTwo WHERE title = :title")
+    @Query("SELECT COUNT(*) FROM fourtyOne WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
 }
 
 @Dao
-interface FortyThreeDao {
-    @Query("SELECT * FROM fortyThree")
-    fun getAll(): Flow<List<FortyThree>>
+interface FourtyTwoDao {
+    @Query("SELECT * FROM fourtyTwo")
+    fun getAll(): Flow<List<FourtyTwo>>
 
     @Upsert
-    suspend fun upsert(fortyThree: FortyThree)
+    suspend fun upsert(fortyTwo: FourtyTwo)
 
     @Delete
-    suspend fun delete(fortyThree: FortyThree)
+    suspend fun delete(fortyTwo: FourtyTwo)
 
-    @Query("DELETE FROM fortyThree")
+    @Query("DELETE FROM fourtyTwo")
     suspend fun deleteAll()
 
-    @Query("SELECT images FROM fortyThree WHERE title = :title")
+    @Query("SELECT images FROM fourtyTwo WHERE title = :title")
     suspend fun getImagesByTitle(title: String): String?
 
-    @Query("UPDATE fortyThree SET images = :images WHERE id = :id")
+    @Query("UPDATE fourtyTwo SET images = :images WHERE id = :id")
     suspend fun updateImages(id: Int, images: String)
 
-    @Query("SELECT * FROM fortyThree")
-    suspend fun getAllImages(): List<FortyThree>
+    @Query("SELECT * FROM fourtyTwo")
+    suspend fun getAllImages(): List<FourtyTwo>
 
-    @Query("UPDATE fortyThree SET videos = :videos WHERE id = :id")
+    @Query("UPDATE fourtyTwo SET videos = :videos WHERE id = :id")
     suspend fun updateVideos(id: Int, videos: String)
 
-    @Query("SELECT videos FROM fortyThree WHERE title = :title")
+    @Query("SELECT videos FROM fourtyTwo WHERE title = :title")
     suspend fun getVideosByTitle(title: String): String?
 
-    @Query("UPDATE fortyThree SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    @Query("UPDATE fourtyTwo SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
     suspend fun appendVideo(id: Int, newVideo: String)
 
-    @Query("SELECT COUNT(*) FROM fortyThree WHERE title = :title")
+    @Query("SELECT COUNT(*) FROM fourtyTwo WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
 }
 
 @Dao
-interface FortyFourDao {
-    @Query("SELECT * FROM fortyFour")
-    fun getAll(): Flow<List<FortyFour>>
+interface FourtyThreeDao {
+    @Query("SELECT * FROM fourtyThree")
+    fun getAll(): Flow<List<FourtyThree>>
 
     @Upsert
-    suspend fun upsert(fortyFour: FortyFour)
+    suspend fun upsert(fortyThree: FourtyThree)
 
     @Delete
-    suspend fun delete(fortyFour: FortyFour)
+    suspend fun delete(fortyThree: FourtyThree)
 
-    @Query("DELETE FROM fortyFour")
+    @Query("DELETE FROM fourtyThree")
     suspend fun deleteAll()
 
-    @Query("SELECT images FROM fortyFour WHERE title = :title")
+    @Query("SELECT images FROM fourtyThree WHERE title = :title")
     suspend fun getImagesByTitle(title: String): String?
 
-    @Query("UPDATE fortyFour SET images = :images WHERE id = :id")
+    @Query("UPDATE fourtyThree SET images = :images WHERE id = :id")
     suspend fun updateImages(id: Int, images: String)
 
-    @Query("SELECT * FROM fortyFour")
-    suspend fun getAllImages(): List<FortyFour>
+    @Query("SELECT * FROM fourtyThree")
+    suspend fun getAllImages(): List<FourtyThree>
 
-    @Query("UPDATE fortyFour SET videos = :videos WHERE id = :id")
+    @Query("UPDATE fourtyThree SET videos = :videos WHERE id = :id")
     suspend fun updateVideos(id: Int, videos: String)
 
-    @Query("SELECT videos FROM fortyFour WHERE title = :title")
+    @Query("SELECT videos FROM fourtyThree WHERE title = :title")
     suspend fun getVideosByTitle(title: String): String?
 
-    @Query("UPDATE fortyFour SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    @Query("UPDATE fourtyThree SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
     suspend fun appendVideo(id: Int, newVideo: String)
 
-    @Query("SELECT COUNT(*) FROM fortyFour WHERE title = :title")
+    @Query("SELECT COUNT(*) FROM fourtyThree WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
 }
 
 @Dao
-interface FortyFiveDao {
-    @Query("SELECT * FROM fortyFive")
-    fun getAll(): Flow<List<FortyFive>>
+interface FourtyFourDao {
+    @Query("SELECT * FROM fourtyFour")
+    fun getAll(): Flow<List<FourtyFour>>
 
     @Upsert
-    suspend fun upsert(fortyFive: FortyFive)
+    suspend fun upsert(fortyFour: FourtyFour)
 
     @Delete
-    suspend fun delete(fortyFive: FortyFive)
+    suspend fun delete(fortyFour: FourtyFour)
 
-    @Query("DELETE FROM fortyFive")
+    @Query("DELETE FROM fourtyFour")
     suspend fun deleteAll()
 
-    @Query("SELECT images FROM fortyFive WHERE title = :title")
+    @Query("SELECT images FROM fourtyFour WHERE title = :title")
     suspend fun getImagesByTitle(title: String): String?
 
-    @Query("UPDATE fortyFive SET images = :images WHERE id = :id")
+    @Query("UPDATE fourtyFour SET images = :images WHERE id = :id")
     suspend fun updateImages(id: Int, images: String)
 
-    @Query("SELECT * FROM fortyFive")
-    suspend fun getAllImages(): List<FortyFive>
+    @Query("SELECT * FROM fourtyFour")
+    suspend fun getAllImages(): List<FourtyFour>
 
-    @Query("UPDATE fortyFive SET videos = :videos WHERE id = :id")
+    @Query("UPDATE fourtyFour SET videos = :videos WHERE id = :id")
     suspend fun updateVideos(id: Int, videos: String)
 
-    @Query("SELECT videos FROM fortyFive WHERE title = :title")
+    @Query("SELECT videos FROM fourtyFour WHERE title = :title")
     suspend fun getVideosByTitle(title: String): String?
 
-    @Query("UPDATE fortyFive SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    @Query("UPDATE fourtyFour SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
     suspend fun appendVideo(id: Int, newVideo: String)
 
-    @Query("SELECT COUNT(*) FROM fortyFive WHERE title = :title")
-    suspend fun getVideoCountByTitle(title: String): Int
-}
-@Dao
-interface FortySixDao {
-    @Query("SELECT * FROM fortySix")
-    fun getAll(): Flow<List<FortySix>>
-
-    @Upsert
-    suspend fun upsert(fortySix: FortySix)
-
-    @Delete
-    suspend fun delete(fortySix: FortySix)
-
-    @Query("DELETE FROM fortySix")
-    suspend fun deleteAll()
-
-    @Query("SELECT images FROM fortySix WHERE title = :title")
-    suspend fun getImagesByTitle(title: String): String?
-
-    @Query("UPDATE fortySix SET images = :images WHERE id = :id")
-    suspend fun updateImages(id: Int, images: String)
-
-    @Query("SELECT * FROM fortySix")
-    suspend fun getAllImages(): List<FortySix>
-
-    @Query("UPDATE fortySix SET videos = :videos WHERE id = :id")
-    suspend fun updateVideos(id: Int, videos: String)
-
-    @Query("SELECT videos FROM fortySix WHERE title = :title")
-    suspend fun getVideosByTitle(title: String): String?
-
-    @Query("UPDATE fortySix SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
-    suspend fun appendVideo(id: Int, newVideo: String)
-
-    @Query("SELECT COUNT(*) FROM fortySix WHERE title = :title")
+    @Query("SELECT COUNT(*) FROM fourtyFour WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
 }
 
 @Dao
-interface FortySevenDao {
-    @Query("SELECT * FROM fortySeven")
-    fun getAll(): Flow<List<FortySeven>>
+interface FourtyFiveDao {
+    @Query("SELECT * FROM fourtyFive")
+    fun getAll(): Flow<List<FourtyFive>>
 
     @Upsert
-    suspend fun upsert(fortySeven: FortySeven)
+    suspend fun upsert(fortyFive: FourtyFive)
 
     @Delete
-    suspend fun delete(fortySeven: FortySeven)
+    suspend fun delete(fortyFive: FourtyFive)
 
-    @Query("DELETE FROM fortySeven")
+    @Query("DELETE FROM fourtyFive")
     suspend fun deleteAll()
 
-    @Query("SELECT images FROM fortySeven WHERE title = :title")
+    @Query("SELECT images FROM fourtyFive WHERE title = :title")
     suspend fun getImagesByTitle(title: String): String?
 
-    @Query("UPDATE fortySeven SET images = :images WHERE id = :id")
+    @Query("UPDATE fourtyFive SET images = :images WHERE id = :id")
     suspend fun updateImages(id: Int, images: String)
 
-    @Query("SELECT * FROM fortySeven")
-    suspend fun getAllImages(): List<FortySeven>
+    @Query("SELECT * FROM fourtyFive")
+    suspend fun getAllImages(): List<FourtyFive>
 
-    @Query("UPDATE fortySeven SET videos = :videos WHERE id = :id")
+    @Query("UPDATE fourtyFive SET videos = :videos WHERE id = :id")
     suspend fun updateVideos(id: Int, videos: String)
 
-    @Query("SELECT videos FROM fortySeven WHERE title = :title")
+    @Query("SELECT videos FROM fourtyFive WHERE title = :title")
     suspend fun getVideosByTitle(title: String): String?
 
-    @Query("UPDATE fortySeven SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    @Query("UPDATE fourtyFive SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
     suspend fun appendVideo(id: Int, newVideo: String)
 
-    @Query("SELECT COUNT(*) FROM fortySeven WHERE title = :title")
+    @Query("SELECT COUNT(*) FROM fourtyFive WHERE title = :title")
+    suspend fun getVideoCountByTitle(title: String): Int
+}
+@Dao
+interface FourtySixDao {
+    @Query("SELECT * FROM fourtySix")
+    fun getAll(): Flow<List<FourtySix>>
+
+    @Upsert
+    suspend fun upsert(fortySix: FourtySix)
+
+    @Delete
+    suspend fun delete(fortySix: FourtySix)
+
+    @Query("DELETE FROM fourtySix")
+    suspend fun deleteAll()
+
+    @Query("SELECT images FROM fourtySix WHERE title = :title")
+    suspend fun getImagesByTitle(title: String): String?
+
+    @Query("UPDATE fourtySix SET images = :images WHERE id = :id")
+    suspend fun updateImages(id: Int, images: String)
+
+    @Query("SELECT * FROM fourtySix")
+    suspend fun getAllImages(): List<FourtySix>
+
+    @Query("UPDATE fourtySix SET videos = :videos WHERE id = :id")
+    suspend fun updateVideos(id: Int, videos: String)
+
+    @Query("SELECT videos FROM fourtySix WHERE title = :title")
+    suspend fun getVideosByTitle(title: String): String?
+
+    @Query("UPDATE fourtySix SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    suspend fun appendVideo(id: Int, newVideo: String)
+
+    @Query("SELECT COUNT(*) FROM fourtySix WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
 }
 
 @Dao
-interface FortyEightDao {
-    @Query("SELECT * FROM fortyEight")
-    fun getAll(): Flow<List<FortyEight>>
+interface FourtySevenDao {
+    @Query("SELECT * FROM fourtySeven")
+    fun getAll(): Flow<List<FourtySeven>>
 
     @Upsert
-    suspend fun upsert(fortyEight: FortyEight)
+    suspend fun upsert(fortySeven: FourtySeven)
 
     @Delete
-    suspend fun delete(fortyEight: FortyEight)
+    suspend fun delete(fortySeven: FourtySeven)
 
-    @Query("DELETE FROM fortyEight")
+    @Query("DELETE FROM fourtySeven")
     suspend fun deleteAll()
 
-    @Query("SELECT images FROM fortyEight WHERE title = :title")
+    @Query("SELECT images FROM fourtySeven WHERE title = :title")
     suspend fun getImagesByTitle(title: String): String?
 
-    @Query("UPDATE fortyEight SET images = :images WHERE id = :id")
+    @Query("UPDATE fourtySeven SET images = :images WHERE id = :id")
     suspend fun updateImages(id: Int, images: String)
 
-    @Query("SELECT * FROM fortyEight")
-    suspend fun getAllImages(): List<FortyEight>
+    @Query("SELECT * FROM fourtySeven")
+    suspend fun getAllImages(): List<FourtySeven>
 
-    @Query("UPDATE fortyEight SET videos = :videos WHERE id = :id")
+    @Query("UPDATE fourtySeven SET videos = :videos WHERE id = :id")
     suspend fun updateVideos(id: Int, videos: String)
 
-    @Query("SELECT videos FROM fortyEight WHERE title = :title")
+    @Query("SELECT videos FROM fourtySeven WHERE title = :title")
     suspend fun getVideosByTitle(title: String): String?
 
-    @Query("UPDATE fortyEight SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    @Query("UPDATE fourtySeven SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
     suspend fun appendVideo(id: Int, newVideo: String)
 
-    @Query("SELECT COUNT(*) FROM fortyEight WHERE title = :title")
+    @Query("SELECT COUNT(*) FROM fourtySeven WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
 }
 
 @Dao
-interface FortyNineDao {
-    @Query("SELECT * FROM fortyNine")
-    fun getAll(): Flow<List<FortyNine>>
+interface FourtyEightDao {
+    @Query("SELECT * FROM fourtyEight")
+    fun getAll(): Flow<List<FourtyEight>>
 
     @Upsert
-    suspend fun upsert(fortyNine: FortyNine)
+    suspend fun upsert(fortyEight: FourtyEight)
 
     @Delete
-    suspend fun delete(fortyNine: FortyNine)
+    suspend fun delete(fortyEight: FourtyEight)
 
-    @Query("DELETE FROM fortyNine")
+    @Query("DELETE FROM fourtyEight")
     suspend fun deleteAll()
 
-    @Query("SELECT images FROM fortyNine WHERE title = :title")
+    @Query("SELECT images FROM fourtyEight WHERE title = :title")
     suspend fun getImagesByTitle(title: String): String?
 
-    @Query("UPDATE fortyNine SET images = :images WHERE id = :id")
+    @Query("UPDATE fourtyEight SET images = :images WHERE id = :id")
     suspend fun updateImages(id: Int, images: String)
 
-    @Query("SELECT * FROM fortyNine")
-    suspend fun getAllImages(): List<FortyNine>
+    @Query("SELECT * FROM fourtyEight")
+    suspend fun getAllImages(): List<FourtyEight>
 
-    @Query("UPDATE fortyNine SET videos = :videos WHERE id = :id")
+    @Query("UPDATE fourtyEight SET videos = :videos WHERE id = :id")
     suspend fun updateVideos(id: Int, videos: String)
 
-    @Query("SELECT videos FROM fortyNine WHERE title = :title")
+    @Query("SELECT videos FROM fourtyEight WHERE title = :title")
     suspend fun getVideosByTitle(title: String): String?
 
-    @Query("UPDATE fortyNine SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    @Query("UPDATE fourtyEight SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
     suspend fun appendVideo(id: Int, newVideo: String)
 
-    @Query("SELECT COUNT(*) FROM fortyNine WHERE title = :title")
+    @Query("SELECT COUNT(*) FROM fourtyEight WHERE title = :title")
+    suspend fun getVideoCountByTitle(title: String): Int
+}
+
+@Dao
+interface FourtyNineDao {
+    @Query("SELECT * FROM fourtyNine")
+    fun getAll(): Flow<List<FourtyNine>>
+
+    @Upsert
+    suspend fun upsert(fortyNine: FourtyNine)
+
+    @Delete
+    suspend fun delete(fortyNine: FourtyNine)
+
+    @Query("DELETE FROM fourtyNine")
+    suspend fun deleteAll()
+
+    @Query("SELECT images FROM fourtyNine WHERE title = :title")
+    suspend fun getImagesByTitle(title: String): String?
+
+    @Query("UPDATE fourtyNine SET images = :images WHERE id = :id")
+    suspend fun updateImages(id: Int, images: String)
+
+    @Query("SELECT * FROM fourtyNine")
+    suspend fun getAllImages(): List<FourtyNine>
+
+    @Query("UPDATE fourtyNine SET videos = :videos WHERE id = :id")
+    suspend fun updateVideos(id: Int, videos: String)
+
+    @Query("SELECT videos FROM fourtyNine WHERE title = :title")
+    suspend fun getVideosByTitle(title: String): String?
+
+    @Query("UPDATE fourtyNine SET videos = CASE WHEN videos IS NULL OR videos = '' THEN :newVideo ELSE videos || ',' || :newVideo END WHERE id = :id")
+    suspend fun appendVideo(id: Int, newVideo: String)
+
+    @Query("SELECT COUNT(*) FROM fourtyNine WHERE title = :title")
     suspend fun getVideoCountByTitle(title: String): Int
 }
 

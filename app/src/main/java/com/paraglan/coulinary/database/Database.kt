@@ -12,9 +12,9 @@ import androidx.room.RoomDatabase
     TwentyOne::class, TwentyTwo::class, TwentyThree::class, TwentyFour::class, TwentyFive::class,
     TwentySix::class, TwentySeven::class, TwentyEight::class, TwentyNine::class, Thirty::class,
     ThirtyOne::class, ThirtyTwo::class, ThirtyThree::class, ThirtyFour::class, ThirtyFive::class,
-    ThirtySix::class, ThirtySeven::class, ThirtyEight::class, ThirtyNine::class, Forty::class,
-    FortyOne::class, FortyTwo::class, FortyThree::class, FortyFour::class, FortyFive::class,
-    FortySix::class, FortySeven::class, FortyEight::class, FortyNine::class, Fifty::class,
+    ThirtySix::class, ThirtySeven::class, ThirtyEight::class, ThirtyNine::class, Fourty::class,
+    FourtyOne::class, FourtyTwo::class, FourtyThree::class, FourtyFour::class, FourtyFive::class,
+    FourtySix::class, FourtySeven::class, FourtyEight::class, FourtyNine::class, Fifty::class,
     FiftyOne::class, FiftyTwo::class, FiftyThree::class, FiftyFour::class, FiftyFive::class,
     FiftySix::class, FiftySeven::class, FiftyEight::class, FiftyNine::class, Sixty::class,
     SixtyOne::class, SixtyTwo::class, SixtyThree::class, SixtyFour::class, SixtyFive::class,
@@ -32,9 +32,9 @@ import androidx.room.RoomDatabase
     TwentyOneLinks::class, TwentyTwoLinks::class, TwentyThreeLinks::class, TwentyFourLinks::class, TwentyFiveLinks::class,
     TwentySixLinks::class, TwentySevenLinks::class, TwentyEightLinks::class, TwentyNineLinks::class, ThirtyLinks::class,
     ThirtyOneLinks::class, ThirtyTwoLinks::class, ThirtyThreeLinks::class, ThirtyFourLinks::class, ThirtyFiveLinks::class,
-    ThirtySixLinks::class, ThirtySevenLinks::class, ThirtyEightLinks::class, ThirtyNineLinks::class, FortyLinks::class,
-    FortyOneLinks::class, FortyTwoLinks::class, FortyThreeLinks::class, FortyFourLinks::class, FortyFiveLinks::class,
-    FortySixLinks::class, FortySevenLinks::class, FortyEightLinks::class, FortyNineLinks::class, FiftyLinks::class,
+    ThirtySixLinks::class, ThirtySevenLinks::class, ThirtyEightLinks::class, ThirtyNineLinks::class, FourtyLinks::class,
+    FourtyOneLinks::class, FourtyTwoLinks::class, FourtyThreeLinks::class, FourtyFourLinks::class, FourtyFiveLinks::class,
+    FourtySixLinks::class, FourtySevenLinks::class, FourtyEightLinks::class, FourtyNineLinks::class, FiftyLinks::class,
     FiftyOneLinks::class, FiftyTwoLinks::class, FiftyThreeLinks::class, FiftyFourLinks::class, FiftyFiveLinks::class,
     FiftySixLinks::class, FiftySevenLinks::class, FiftyEightLinks::class, FiftyNineLinks::class, SixtyLinks::class,
     SixtyOneLinks::class, SixtyTwoLinks::class, SixtyThreeLinks::class, SixtyFourLinks::class, SixtyFiveLinks::class,
@@ -89,16 +89,16 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun thirtySevenDao(): ThirtySevenDao
     abstract fun thirtyEightDao(): ThirtyEightDao
     abstract fun thirtyNineDao(): ThirtyNineDao
-    abstract fun fortyDao(): FortyDao
-    abstract fun fortyOneDao(): FortyOneDao
-    abstract fun fortyTwoDao(): FortyTwoDao
-    abstract fun fortyThreeDao(): FortyThreeDao
-    abstract fun fortyFourDao(): FortyFourDao
-    abstract fun fortyFiveDao(): FortyFiveDao
-    abstract fun fortySixDao(): FortySixDao
-    abstract fun fortySevenDao(): FortySevenDao
-    abstract fun fortyEightDao(): FortyEightDao
-    abstract fun fortyNineDao(): FortyNineDao
+    abstract fun fourtyDao(): FourtyDao
+    abstract fun fourtyOneDao(): FourtyOneDao
+    abstract fun fourtyTwoDao(): FourtyTwoDao
+    abstract fun fourtyThreeDao(): FourtyThreeDao
+    abstract fun fourtyFourDao(): FourtyFourDao
+    abstract fun fourtyFiveDao(): FourtyFiveDao
+    abstract fun fourtySixDao(): FourtySixDao
+    abstract fun fourtySevenDao(): FourtySevenDao
+    abstract fun fourtyEightDao(): FourtyEightDao
+    abstract fun fourtyNineDao(): FourtyNineDao
     abstract fun fiftyDao(): FiftyDao
     abstract fun fiftyOneDao(): FiftyOneDao
     abstract fun fiftyTwoDao(): FiftyTwoDao
@@ -190,16 +190,16 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun thirtySevenLinksDao(): ThirtySevenLinksDao
     abstract fun thirtyEightLinksDao(): ThirtyEightLinksDao
     abstract fun thirtyNineLinksDao(): ThirtyNineLinksDao
-    abstract fun fortyLinksDao(): FortyLinksDao
-    abstract fun fortyOneLinksDao(): FortyOneLinksDao
-    abstract fun fortyTwoLinksDao(): FortyTwoLinksDao
-    abstract fun fortyThreeLinksDao(): FortyThreeLinksDao
-    abstract fun fortyFourLinksDao(): FortyFourLinksDao
-    abstract fun fortyFiveLinksDao(): FortyFiveLinksDao
-    abstract fun fortySixLinksDao(): FortySixLinksDao
-    abstract fun fortySevenLinksDao(): FortySevenLinksDao
-    abstract fun fortyEightLinksDao(): FortyEightLinksDao
-    abstract fun fortyNineLinksDao(): FortyNineLinksDao
+    abstract fun fourtyLinksDao(): FourtyLinksDao
+    abstract fun fourtyOneLinksDao(): FourtyOneLinksDao
+    abstract fun fourtyTwoLinksDao(): FourtyTwoLinksDao
+    abstract fun fourtyThreeLinksDao(): FourtyThreeLinksDao
+    abstract fun fourtyFourLinksDao(): FourtyFourLinksDao
+    abstract fun fourtyFiveLinksDao(): FourtyFiveLinksDao
+    abstract fun fourtySixLinksDao(): FourtySixLinksDao
+    abstract fun fourtySevenLinksDao(): FourtySevenLinksDao
+    abstract fun fourtyEightLinksDao(): FourtyEightLinksDao
+    abstract fun fourtyNineLinksDao(): FourtyNineLinksDao
     abstract fun fiftyLinksDao(): FiftyLinksDao
     abstract fun fiftyOneLinksDao(): FiftyOneLinksDao
     abstract fun fiftyTwoLinksDao(): FiftyTwoLinksDao
