@@ -231,7 +231,7 @@ fun ThreeScreen(navController: NavController) {
     }
     LaunchedEffect(key1 = bitmap) {
         if (bitmap != null) {
-            Log.d("TwoScreen", "LaunchedEffect bitmap: $bitmap")
+            Log.d("ThreeScreen", "LaunchedEffect bitmap: $bitmap")
         }
     }
 
@@ -936,9 +936,9 @@ fun ThreeScreen(navController: NavController) {
                                 if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
                                     val imageToSave = selectedImageUri?.toString() ?: R.drawable.noimage.toString()
                                     val videoToSave = selectedRecipeVideo?.toString() ?: "video"
-                                    val recipe = Two(title = newTitleText, content = newContentText,
+                                    val recipe = Three(title = newTitleText, content = newContentText,
                                         images = imageToSave, videos = videoToSave, id = selectedRecipeId)
-                                    scope.launch { db.twoDao().upsert(recipe) }
+                                    scope.launch { db.threeDao().upsert(recipe) }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
                                     panelStateRight = PanelState.Hidden
