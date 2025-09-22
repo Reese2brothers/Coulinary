@@ -1,4 +1,4 @@
-package com.paraglan.coulinary.screens.fives.fourtyone
+package com.paraglan.coulinary.screens.fives.fourtyfive
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -74,7 +74,7 @@ import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
 import com.paraglan.coulinary.database.Favourites
 import com.paraglan.coulinary.database.Four
-import com.paraglan.coulinary.database.FourtyOne
+import com.paraglan.coulinary.database.FourtyFive
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.ones.one.PanelState
 import com.paraglan.coulinary.screens.ones.one.saveTextAsPdf
@@ -90,7 +90,7 @@ import java.nio.charset.StandardCharsets
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun FourtyOneRecipeScreen(navController: NavController, title: String, content: String, image: String, videos: String, id: Int) {
+fun FourtyFiveRecipeScreen(navController: NavController, title: String, content: String, image: String, videos: String, id: Int) {
     val decTitle = URLDecoder.decode(title, StandardCharsets.UTF_8.toString())
     val decContent = URLDecoder.decode(content, StandardCharsets.UTF_8.toString())
     var panelState by remember { mutableStateOf(PanelState.Hidden) }
@@ -118,28 +118,28 @@ fun FourtyOneRecipeScreen(navController: NavController, title: String, content: 
     var tints by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = text) {
-        tints = db.favouritesDao().isFavourite(text, "FourtyOneRecipeScreen")
+        tints = db.favouritesDao().isFavourite(text, "FourtyFiveRecipeScreen")
     }
     LaunchedEffect(key1 = listsImage) {
         withContext(Dispatchers.IO) {
-            val imagesString = db.fourtyOneDao().getImagesByTitle(title) ?: ""
+            val imagesString = db.fourtyFiveDao().getImagesByTitle(title) ?: ""
             if (imagesString.isNotEmpty()) {
                 val imagesList = imagesString.split(",").map { it.trim() }
                 listsImage.addAll(imagesList)
                 if (listsImage.isNotEmpty()){
                     selectedImage = listsImage[0]
                 }
-                Log.d("TAG", "FourtyOneRecipeScreen: $listsImage")
+                Log.d("TAG", "FourtyFiveRecipeScreen: $listsImage")
             }
         }
     }
     LaunchedEffect(key1 = listsVideo) {
         withContext(Dispatchers.IO) {
-            val videoString = db.fourtyOneDao().getVideosByTitle(title) ?: ""
+            val videoString = db.fourtyFiveDao().getVideosByTitle(title) ?: ""
             if (videoString.isNotEmpty()) {
                 val videosList = videoString.split(",").map { it.trim() }
                 listsVideo.addAll(videosList)
-                Log.d("TAG", "FourtyOneRecipeScreen: $listsVideo")
+                Log.d("TAG", "FourtyFiveRecipeScreen: $listsVideo")
             }
         }
     }
@@ -193,7 +193,7 @@ fun FourtyOneRecipeScreen(navController: NavController, title: String, content: 
         val distinctImages = images.distinct()
         val imagessString = distinctImages.joinToString(",")
         scope.launch {
-            db.fourtyOneDao().updateImages(id, imagessString)
+            db.fourtyFiveDao().updateImages(id, imagessString)
         }
     }
     if (showImagePicker) {
@@ -268,7 +268,7 @@ fun FourtyOneRecipeScreen(navController: NavController, title: String, content: 
                 verticalAlignment = Alignment.CenterVertically){
                 Image(painter = painterResource(R.drawable.edit), contentDescription = "edit",
                     modifier = Modifier.size(30.dp).clickable {
-                        if(tints) { scope.launch { db.favouritesDao().deleteFavourite(text, "FourRecipeScreen") } }
+                        if(tints) { scope.launch { db.favouritesDao().deleteFavourite(text, "FourtyFiveRecipeScreen") } }
                         showDialogEditRecipe.value = true
                     }
                 )
@@ -339,11 +339,11 @@ fun FourtyOneRecipeScreen(navController: NavController, title: String, content: 
                                 containerColor = colorResource(id = R.color.boloto)
                             ), onClick = {
                                 scope.launch {
-                                    db.fourtyOneDao().upsert(
-                                        FourtyOne(title = text, content = text2,
+                                    db.fourtyFiveDao().upsert(
+                                        FourtyFive(title = text, content = text2,
                                             images = listsImage.joinToString(","), videos = videos, id = id)
                                     )
-                                    if(!tints){ db.favouritesDao().insertFavourites(Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "FourtyOneRecipeScreen")) }
+                                    if(!tints){ db.favouritesDao().insertFavourites(Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "FourtyFiveRecipeScreen")) }
                                 }
                                 showDialogEditRecipe.value = false
                             }) {
@@ -368,10 +368,10 @@ fun FourtyOneRecipeScreen(navController: NavController, title: String, content: 
                     modifier = Modifier.size(30.dp).clickable {
                         scope.launch {
                             if (tints) {
-                                db.favouritesDao().deleteFavourite(text, "FourtyOneRecipeScreen")
+                                db.favouritesDao().deleteFavourite(text, "FourtyFiveRecipeScreen")
                             } else {
                                 db.favouritesDao().insertFavourites(
-                                    Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "FourtyOneRecipeScreen")
+                                    Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "FourtyFiveRecipeScreen")
                                 )
                             }
                             tints = !tints
@@ -501,7 +501,7 @@ fun FourtyOneRecipeScreen(navController: NavController, title: String, content: 
                                 modifiedList.add("video")
                             }
                             val encodedList = modifiedList.joinToString(",") { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }
-                            navController.navigate("VideoScreen/$encodedList/$text/$id/FourtyOneRecipeScreen")
+                            navController.navigate("VideoScreen/$encodedList/$text/$id/FourtyFiveRecipeScreen")
                             Log.d("TAG", "VideoScreenEncodedList: $encodedList")
                         }
                 )

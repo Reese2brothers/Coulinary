@@ -231,7 +231,7 @@ fun FourScreen(navController: NavController) {
     }
     LaunchedEffect(key1 = bitmap) {
         if (bitmap != null) {
-            Log.d("TwoScreen", "LaunchedEffect bitmap: $bitmap")
+            Log.d("FourScreen", "LaunchedEffect bitmap: $bitmap")
         }
     }
 

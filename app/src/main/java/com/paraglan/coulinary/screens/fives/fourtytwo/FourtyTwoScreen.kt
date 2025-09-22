@@ -1,4 +1,4 @@
-package com.paraglan.coulinary.screens.fives.fourtyone
+package com.paraglan.coulinary.screens.fives.fourtytwo
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -110,8 +110,8 @@ import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
 import com.paraglan.coulinary.database.Four
 import com.paraglan.coulinary.database.FourLinks
-import com.paraglan.coulinary.database.FourtyOne
-import com.paraglan.coulinary.database.FourtyOneLinks
+import com.paraglan.coulinary.database.FourtyTwo
+import com.paraglan.coulinary.database.FourtyTwoLinks
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.PanelState
 import com.paraglan.coulinary.screens.ones.one.isNetworkAvailable
@@ -134,12 +134,12 @@ import java.util.concurrent.TimeUnit
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FourtyOneScreen(navController: NavController) {
+fun FourtyTwoScreen(navController: NavController) {
     var isSearchIconClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current as Activity
     val scope = rememberCoroutineScope()
     val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "database").build() }
-    val dairyList by db.fourtyOneDao().getAll().collectAsState(initial = emptyList())
+    val dairyList by db.fourtyTwoDao().getAll().collectAsState(initial = emptyList())
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     var searchText by remember { mutableStateOf("") }
@@ -155,8 +155,8 @@ fun FourtyOneScreen(navController: NavController) {
     var selectedRecipeId by remember { mutableStateOf<Int>(0) }
     var selectedRecipeVideo by remember { mutableStateOf<Uri?>(null) }
 
-    val itemsFlow: Flow<List<FourtyOneLinks>> = db.fourtyOneLinksDao().getAll()
-    val fourtyOnelistFlow: Flow<List<FourtyOne>> = db.fourtyOneDao().getAll()
+    val itemsFlow: Flow<List<FourtyTwoLinks>> = db.fourtyTwoLinksDao().getAll()
+    val fourtyTwolistFlow: Flow<List<FourtyTwo>> = db.fourtyTwoDao().getAll()
     val links by itemsFlow.collectAsState(initial = emptyList())
     val showDialogLinkDeleteAll = remember { mutableStateOf(false) }
     val showDialogAddNewLink = remember { mutableStateOf(false) }
@@ -164,10 +164,10 @@ fun FourtyOneScreen(navController: NavController) {
     val showDialogLinkEditComment = remember { mutableStateOf(false) }
     var showDialogDeleteItemRecipe = remember { mutableStateOf(false) }
     var showDialogEditItemRecipe = remember { mutableStateOf(false) }
-    var selectedDeleteItemRecipe by remember { mutableStateOf<FourtyOne?>(null) }
-    var selectedEditItemRecipe by remember { mutableStateOf<FourtyOne?>(null) }
-    var selectedDeleteItemLink by remember { mutableStateOf<FourtyOneLinks?>(null) }
-    var selectedEditItemLink by remember { mutableStateOf<FourtyOneLinks?>(null) }
+    var selectedDeleteItemRecipe by remember { mutableStateOf<FourtyTwo?>(null) }
+    var selectedEditItemRecipe by remember { mutableStateOf<FourtyTwo?>(null) }
+    var selectedDeleteItemLink by remember { mutableStateOf<FourtyTwoLinks?>(null) }
+    var selectedEditItemLink by remember { mutableStateOf<FourtyTwoLinks?>(null) }
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -231,7 +231,7 @@ fun FourtyOneScreen(navController: NavController) {
     }
     LaunchedEffect(key1 = bitmap) {
         if (bitmap != null) {
-            Log.d("FourtyOneScreen", "LaunchedEffect bitmap: $bitmap")
+            Log.d("FourtyTwoScreen", "LaunchedEffect bitmap: $bitmap")
         }
     }
 
@@ -306,11 +306,11 @@ fun FourtyOneScreen(navController: NavController) {
                             if(item.images.isEmpty()){
                                 val encodedImageUri = R.drawable.noimage.toString()
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("FourtyOneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("FourtyTwoRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             } else {
                                 val encodedImageUri = URLEncoder.encode(item.images, StandardCharsets.UTF_8.toString())
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("FourtyOneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("FourtyTwoRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             }
 
                         },
@@ -359,7 +359,7 @@ fun FourtyOneScreen(navController: NavController) {
                                         color = colorResource(id = R.color.boloto),
                                     )
                                     val isFavourite by produceState<Boolean>(initialValue = false, item.title) {
-                                        value = db.favouritesDao().isFavourite(item.title, "FourtyOneRecipeScreen")
+                                        value = db.favouritesDao().isFavourite(item.title, "FourtyTwoRecipeScreen")
                                     }
                                     Icon(painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else
                                         R.drawable.baseline_favorite_border_24),
@@ -447,7 +447,7 @@ fun FourtyOneScreen(navController: NavController) {
                                                     val imageUrisToDelete = selectedDeleteItemRecipe?.images?.split(",")
                                                         ?.filter { it.isNotBlank() }
                                                         ?.map { Uri.parse(it) } ?: emptyList()
-                                                    selectedDeleteItemRecipe?.let { db.fourtyOneDao().delete(it) }
+                                                    selectedDeleteItemRecipe?.let { db.fourtyTwoDao().delete(it) }
                                                     imageUrisToDelete.forEach { imageUri ->
                                                         if (imageUri.scheme == "content") {
                                                             context.contentResolver.delete(imageUri, null, null)
@@ -624,7 +624,7 @@ fun FourtyOneScreen(navController: NavController) {
                                     containerColor = colorResource(id = R.color.boloto)
                                 ), onClick = {
                                     scope.launch {
-                                        parseFourtyOneLinkAndSave(context = context, titleLink = titleLink, db = db,
+                                        parseFourtyTwoLinkAndSave(context = context, titleLink = titleLink, db = db,
                                             scope = scope, onSuccess = {
                                                 showDialogAddNewLink.value = false
                                                 titleLink = ""
@@ -670,7 +670,7 @@ fun FourtyOneScreen(navController: NavController) {
                                     containerColor = colorResource(id = R.color.boloto)
                                 ), onClick = {
                                     scope.launch {
-                                        db.fourtyOneLinksDao().deleteAll()
+                                        db.fourtyTwoLinksDao().deleteAll()
                                     }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
@@ -772,7 +772,7 @@ fun FourtyOneScreen(navController: NavController) {
                                                     ), onClick = {
                                                         scope.launch {
                                                             selectedEditItemLink?.let { it.comment = tempComment
-                                                                db.fourtyOneLinksDao().upsertLink(it)
+                                                                db.fourtyTwoLinksDao().upsertLink(it)
                                                             }
                                                         }
                                                         focusRequester.freeFocus()
@@ -829,7 +829,7 @@ fun FourtyOneScreen(navController: NavController) {
                                                 ), onClick = {
                                                     scope.launch {
                                                         selectedDeleteItemLink?.let {
-                                                            db.fourtyOneLinksDao().deleteLinks(it)
+                                                            db.fourtyTwoLinksDao().deleteLinks(it)
                                                         }
                                                     }
                                                     showDialogDeleteItemLink.value = false
@@ -936,9 +936,9 @@ fun FourtyOneScreen(navController: NavController) {
                                 if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
                                     val imageToSave = selectedImageUri?.toString() ?: R.drawable.noimage.toString()
                                     val videoToSave = selectedRecipeVideo?.toString() ?: "video"
-                                    val recipe = FourtyOne(title = newTitleText, content = newContentText,
+                                    val recipe = FourtyTwo(title = newTitleText, content = newContentText,
                                         images = imageToSave, videos = videoToSave, id = selectedRecipeId)
-                                    scope.launch { db.fourtyOneDao().upsert(recipe) }
+                                    scope.launch { db.fourtyTwoDao().upsert(recipe) }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
                                     panelStateRight = PanelState.Hidden
@@ -1070,8 +1070,8 @@ fun FourtyOneScreen(navController: NavController) {
         }
     }
 }
-fun parseFourtyOneLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
-                         onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<FourtyOneLinks>,
+fun parseFourtyTwoLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
+                         onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<FourtyTwoLinks>,
                          setIsLoading: (Boolean) -> Unit) {
     if (!isNetworkAvailable(context)) {
         setIsLoading(false)
@@ -1139,7 +1139,7 @@ fun parseFourtyOneLinkAndSave(context: Context, titleLink: String, db: AppDataba
             setIsLoading(false)
         }
         if (title.isNotEmpty() && textLink.isNotEmpty()) {
-            db.fourtyOneLinksDao().upsertLink(FourtyOneLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
+            db.fourtyTwoLinksDao().upsertLink(FourtyTwoLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
             withContext(Dispatchers.Main) {
                 onSuccess()
                 if (links.isNotEmpty()){
