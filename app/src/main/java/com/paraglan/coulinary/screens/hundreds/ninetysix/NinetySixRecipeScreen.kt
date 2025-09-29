@@ -1,22 +1,9 @@
-package com.paraglan.coulinary.screens.ones.nine
+package com.paraglan.coulinary.screens.hundreds.ninetysix
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Typeface
-import android.graphics.pdf.PdfDocument
 import android.net.Uri
-import android.os.Environment
-import android.text.Layout
-import android.text.StaticLayout
-import android.text.TextPaint
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -80,9 +67,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import androidx.room.Room
 import coil.compose.AsyncImage
@@ -90,7 +74,7 @@ import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
 import com.paraglan.coulinary.database.Favourites
 import com.paraglan.coulinary.database.Nine
-import com.paraglan.coulinary.database.Two
+import com.paraglan.coulinary.database.NinetySix
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.ones.one.PanelState
 import com.paraglan.coulinary.screens.ones.one.saveTextAsPdf
@@ -99,8 +83,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -108,7 +90,7 @@ import java.nio.charset.StandardCharsets
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun NineRecipeScreen(navController: NavController, title: String, content: String, image: String, videos: String, id: Int) {
+fun NinetySixRecipeScreen(navController: NavController, title: String, content: String, image: String, videos: String, id: Int) {
     val decTitle = URLDecoder.decode(title, StandardCharsets.UTF_8.toString())
     val decContent = URLDecoder.decode(content, StandardCharsets.UTF_8.toString())
     var panelState by remember { mutableStateOf(PanelState.Hidden) }
@@ -136,11 +118,11 @@ fun NineRecipeScreen(navController: NavController, title: String, content: Strin
     var tints by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = text) {
-        tints = db.favouritesDao().isFavourite(text, "NineRecipeScreen")
+        tints = db.favouritesDao().isFavourite(text, "NinetySixRecipeScreen")
     }
     LaunchedEffect(key1 = listsImage) {
         withContext(Dispatchers.IO) {
-            val imagesString = db.nineDao().getImagesByTitle(title) ?: ""
+            val imagesString = db.ninetySixDao().getImagesByTitle(title) ?: ""
             if (imagesString.isNotEmpty()) {
                 val imagesList = imagesString.split(",").map { it.trim() }
                 listsImage.addAll(imagesList)
@@ -152,7 +134,7 @@ fun NineRecipeScreen(navController: NavController, title: String, content: Strin
     }
     LaunchedEffect(key1 = listsVideo) {
         withContext(Dispatchers.IO) {
-            val videoString = db.nineDao().getVideosByTitle(title) ?: ""
+            val videoString = db.ninetySixDao().getVideosByTitle(title) ?: ""
             if (videoString.isNotEmpty()) {
                 val videosList = videoString.split(",").map { it.trim() }
                 listsVideo.addAll(videosList)
@@ -209,7 +191,7 @@ fun NineRecipeScreen(navController: NavController, title: String, content: Strin
         val distinctImages = images.distinct()
         val imagessString = distinctImages.joinToString(",")
         scope.launch {
-            db.nineDao().updateImages(id, imagessString)
+            db.ninetySixDao().updateImages(id, imagessString)
         }
     }
     if (showImagePicker) {
@@ -284,7 +266,7 @@ fun NineRecipeScreen(navController: NavController, title: String, content: Strin
                 verticalAlignment = Alignment.CenterVertically){
                 Image(painter = painterResource(R.drawable.edit), contentDescription = "edit",
                     modifier = Modifier.size(30.dp).clickable {
-                        if(tints) { scope.launch { db.favouritesDao().deleteFavourite(text, "NineRecipeScreen") } }
+                        if(tints) { scope.launch { db.favouritesDao().deleteFavourite(text, "NinetySixRecipeScreen") } }
                         showDialogEditRecipe.value = true
                     }
                 )
@@ -355,11 +337,11 @@ fun NineRecipeScreen(navController: NavController, title: String, content: Strin
                                 containerColor = colorResource(id = R.color.boloto)
                             ), onClick = {
                                 scope.launch {
-                                    db.nineDao().upsert(
-                                        Nine(title = text, content = text2,
+                                    db.ninetySixDao().upsert(
+                                        NinetySix(title = text, content = text2,
                                             images = listsImage.joinToString(","), videos = videos, id = id)
                                     )
-                                    if(!tints){ db.favouritesDao().insertFavourites(Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "NineRecipeScreen")) }
+                                    if(!tints){ db.favouritesDao().insertFavourites(Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "NinetySixRecipeScreen")) }
                                 }
                                 showDialogEditRecipe.value = false
                             }) {
@@ -384,10 +366,10 @@ fun NineRecipeScreen(navController: NavController, title: String, content: Strin
                     modifier = Modifier.size(30.dp).clickable {
                         scope.launch {
                             if (tints) {
-                                db.favouritesDao().deleteFavourite(text, "NineRecipeScreen")
+                                db.favouritesDao().deleteFavourite(text, "NinetySixRecipeScreen")
                             } else {
                                 db.favouritesDao().insertFavourites(
-                                    Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "NineRecipeScreen")
+                                    Favourites(title = text, content = text2, images = selectedImage, favouriteskey = "NinetySixRecipeScreen")
                                 )
                             }
                             tints = !tints
@@ -517,7 +499,7 @@ fun NineRecipeScreen(navController: NavController, title: String, content: Strin
                                 modifiedList.add("video")
                             }
                             val encodedList = modifiedList.joinToString(",") { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }
-                            navController.navigate("VideoScreen/$encodedList/$text/$id/NineRecipeScreen")
+                            navController.navigate("VideoScreen/$encodedList/$text/$id/NinetySixRecipeScreen")
                             Log.d("TAG", "VideoScreenEncodedList: $encodedList")
                         }
                 )

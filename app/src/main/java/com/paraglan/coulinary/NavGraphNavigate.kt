@@ -69,6 +69,46 @@ import com.paraglan.coulinary.screens.fours.thirtythree.ThirtyThreeRecipeScreen
 import com.paraglan.coulinary.screens.fours.thirtythree.ThirtyThreeScreen
 import com.paraglan.coulinary.screens.fours.thirtytwo.ThirtyTwoRecipeScreen
 import com.paraglan.coulinary.screens.fours.thirtytwo.ThirtyTwoScreen
+import com.paraglan.coulinary.screens.hundreds.hundred.HundredRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.hundred.HundredScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyeight.NinetyEightRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyeight.NinetyEightScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyfive.NinetyFiveRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyfive.NinetyFiveScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyfour.NinetyFourRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyfour.NinetyFourScreen
+import com.paraglan.coulinary.screens.hundreds.ninetynine.NinetyNineRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetynine.NinetyNineScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyone.NinetyOneRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyone.NinetyOneScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyseven.NinetySevenRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetyseven.NinetySevenScreen
+import com.paraglan.coulinary.screens.hundreds.ninetysix.NinetySixRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetysix.NinetySixScreen
+import com.paraglan.coulinary.screens.hundreds.ninetythree.NinetyThreeRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetythree.NinetyThreeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetytwo.NinetyTwoRecipeScreen
+import com.paraglan.coulinary.screens.hundreds.ninetytwo.NinetyTwoScreen
+import com.paraglan.coulinary.screens.nines.eightyeight.EightyEightRecipeScreen
+import com.paraglan.coulinary.screens.nines.eightyeight.EightyEightScreen
+import com.paraglan.coulinary.screens.nines.eightyfive.EightyFiveRecipeScreen
+import com.paraglan.coulinary.screens.nines.eightyfive.EightyFiveScreen
+import com.paraglan.coulinary.screens.nines.eightyfour.EightyFourRecipeScreen
+import com.paraglan.coulinary.screens.nines.eightyfour.EightyFourScreen
+import com.paraglan.coulinary.screens.nines.eightynine.EightyNineRecipeScreen
+import com.paraglan.coulinary.screens.nines.eightynine.EightyNineScreen
+import com.paraglan.coulinary.screens.nines.eightyone.EightyOneRecipeScreen
+import com.paraglan.coulinary.screens.nines.eightyone.EightyOneScreen
+import com.paraglan.coulinary.screens.nines.eightyseven.EightySevenRecipeScreen
+import com.paraglan.coulinary.screens.nines.eightyseven.EightySevenScreen
+import com.paraglan.coulinary.screens.nines.eightysix.EightySixRecipeScreen
+import com.paraglan.coulinary.screens.nines.eightysix.EightySixScreen
+import com.paraglan.coulinary.screens.nines.eightythree.EightyThreeRecipeScreen
+import com.paraglan.coulinary.screens.nines.eightythree.EightyThreeScreen
+import com.paraglan.coulinary.screens.nines.eightytwo.EightyTwoRecipeScreen
+import com.paraglan.coulinary.screens.nines.eightytwo.EightyTwoScreen
+import com.paraglan.coulinary.screens.nines.ninety.NinetyRecipeScreen
+import com.paraglan.coulinary.screens.nines.ninety.NinetyScreen
 import com.paraglan.coulinary.screens.ones.eight.EightRecipeScreen
 import com.paraglan.coulinary.screens.ones.eight.EightScreen
 import com.paraglan.coulinary.screens.ones.five.FiveRecipeScreen
@@ -256,6 +296,26 @@ fun NavGraphNavigate(context : Context, navController: NavHostController) {
         composable("SeventyEightScreen") { SeventyEightScreen(navController = navController)}
         composable("SeventyNineScreen") { SeventyNineScreen(navController = navController)}
         composable("EightyScreen") { EightyScreen(navController = navController)}
+        composable("EightyOneScreen") { EightyOneScreen(navController = navController)}
+        composable("EightyTwoScreen") { EightyTwoScreen(navController = navController)}
+        composable("EightyThreeScreen") { EightyThreeScreen(navController = navController)}
+        composable("EightyFourScreen") { EightyFourScreen(navController = navController)}
+        composable("EightyFiveScreen") { EightyFiveScreen(navController = navController)}
+        composable("EightySixScreen") { EightySixScreen(navController = navController)}
+        composable("EightySevenScreen") { EightySevenScreen(navController = navController)}
+        composable("EightyEightScreen") { EightyEightScreen(navController = navController)}
+        composable("EightyNineScreen") { EightyNineScreen(navController = navController)}
+        composable("NinetyScreen") { NinetyScreen(navController = navController)}
+        composable("NinetyOneScreen") { NinetyOneScreen(navController = navController)}
+        composable("NinetyTwoScreen") { NinetyTwoScreen(navController = navController)}
+        composable("NinetyThreeScreen") { NinetyThreeScreen(navController = navController)}
+        composable("NinetyFourScreen") { NinetyFourScreen(navController = navController)}
+        composable("NinetyFiveScreen") { NinetyFiveScreen(navController = navController)}
+        composable("NinetySixScreen") { NinetySixScreen(navController = navController)}
+        composable("NinetySevenScreen") { NinetySevenScreen(navController = navController)}
+        composable("NinetyEightScreen") { NinetyEightScreen(navController = navController)}
+        composable("NinetyNineScreen") { NinetyNineScreen(navController = navController)}
+        composable("HundredScreen") { HundredScreen(navController = navController)}
 
 
         composable(route = "OneRecipeScreen/{title}/{content}/{image}/{video}/{id}",
@@ -1458,6 +1518,306 @@ fun NavGraphNavigate(context : Context, navController: NavHostController) {
             val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
             val id = backStackEntry.arguments?.getInt("id") ?: 0
             EightyRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "EightyOneRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            EightyOneRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "EightyTwoRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            EightyTwoRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "EightyThreeRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            EightyThreeRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "EightyFourRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            EightyFourRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "EightyFiveRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            EightyFiveRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "EightySixRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            EightySixRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "EightySevenRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            EightySevenRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "EightyEightRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            EightyEightRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "EightyNineRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            EightyNineRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetyRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetyRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetyOneRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetyOneRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetyTwoRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetyTwoRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetyThreeRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetyThreeRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetyFourRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetyFourRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetyFiveRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetyFiveRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetySixRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetySixRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetySevenRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetySevenRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetyEightRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetyEightRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "NinetyNineRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            NinetyNineRecipeScreen(navController, title, content, image, video, id)
+        }
+        composable(route = "HundredRecipeScreen/{title}/{content}/{image}/{video}/{id}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("content") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType },
+                navArgument("video") { type = NavType.StringType },
+                navArgument("id") { type = NavType.IntType }
+            )) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val content = backStackEntry.arguments?.getString("content") ?: ""
+            val image = URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", StandardCharsets.UTF_8.toString())
+            val video = URLDecoder.decode(backStackEntry.arguments?.getString("video") ?: "", StandardCharsets.UTF_8.toString())
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            HundredRecipeScreen(navController, title, content, image, video, id)
         }
 
 

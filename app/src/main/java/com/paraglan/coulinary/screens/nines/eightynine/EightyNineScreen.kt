@@ -1,4 +1,4 @@
-package com.paraglan.coulinary.screens.nines.eightyone
+package com.paraglan.coulinary.screens.nines.eightynine
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -110,8 +110,8 @@ import com.paraglan.coulinary.R
 import com.paraglan.coulinary.database.AppDatabase
 import com.paraglan.coulinary.database.Eight
 import com.paraglan.coulinary.database.EightLinks
-import com.paraglan.coulinary.database.EightyOne
-import com.paraglan.coulinary.database.EightyOneLinks
+import com.paraglan.coulinary.database.EightyNine
+import com.paraglan.coulinary.database.EightyNineLinks
 import com.paraglan.coulinary.screens.ImagePicker
 import com.paraglan.coulinary.screens.PanelState
 import com.paraglan.coulinary.screens.ones.one.isNetworkAvailable
@@ -134,12 +134,12 @@ import java.util.concurrent.TimeUnit
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EightyOneScreen(navController: NavController) {
+fun EightyNineScreen(navController: NavController) {
     var isSearchIconClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current as Activity
     val scope = rememberCoroutineScope()
     val db = remember { Room.databaseBuilder(context, AppDatabase::class.java, "database").build() }
-    val dairyList by db.eightyOneDao().getAll().collectAsState(initial = emptyList())
+    val dairyList by db.eightyNineDao().getAll().collectAsState(initial = emptyList())
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     var searchText by remember { mutableStateOf("") }
@@ -155,8 +155,8 @@ fun EightyOneScreen(navController: NavController) {
     var selectedRecipeId by remember { mutableStateOf<Int>(0) }
     var selectedRecipeVideo by remember { mutableStateOf<Uri?>(null) }
 
-    val itemsFlow: Flow<List<EightyOneLinks>> = db.eightyOneLinksDao().getAll()
-    val eightyOnelistFlow: Flow<List<EightyOne>> = db.eightyOneDao().getAll()
+    val itemsFlow: Flow<List<EightyNineLinks>> = db.eightyNineLinksDao().getAll()
+    val eightyNinelistFlow: Flow<List<EightyNine>> = db.eightyNineDao().getAll()
     val links by itemsFlow.collectAsState(initial = emptyList())
     val showDialogLinkDeleteAll = remember { mutableStateOf(false) }
     val showDialogAddNewLink = remember { mutableStateOf(false) }
@@ -164,10 +164,10 @@ fun EightyOneScreen(navController: NavController) {
     val showDialogLinkEditComment = remember { mutableStateOf(false) }
     var showDialogDeleteItemRecipe = remember { mutableStateOf(false) }
     var showDialogEditItemRecipe = remember { mutableStateOf(false) }
-    var selectedDeleteItemRecipe by remember { mutableStateOf<EightyOne?>(null) }
-    var selectedEditItemRecipe by remember { mutableStateOf<EightyOne?>(null) }
-    var selectedDeleteItemLink by remember { mutableStateOf<EightyOneLinks?>(null) }
-    var selectedEditItemLink by remember { mutableStateOf<EightyOneLinks?>(null) }
+    var selectedDeleteItemRecipe by remember { mutableStateOf<EightyNine?>(null) }
+    var selectedEditItemRecipe by remember { mutableStateOf<EightyNine?>(null) }
+    var selectedDeleteItemLink by remember { mutableStateOf<EightyNineLinks?>(null) }
+    var selectedEditItemLink by remember { mutableStateOf<EightyNineLinks?>(null) }
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -305,11 +305,11 @@ fun EightyOneScreen(navController: NavController) {
                             if(item.images.isEmpty()){
                                 val encodedImageUri = R.drawable.noimage.toString()
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("EightyOneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("EightyNineRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             } else {
                                 val encodedImageUri = URLEncoder.encode(item.images, StandardCharsets.UTF_8.toString())
                                 val encodedVideoUri = URLEncoder.encode(item.videos, StandardCharsets.UTF_8.toString()) ?: "video"
-                                navController.navigate("EightyOneRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
+                                navController.navigate("EightyNineRecipeScreen/${item.title}/${item.content}/$encodedImageUri/$encodedVideoUri/${item.id}")
                             }
 
                         },
@@ -358,7 +358,7 @@ fun EightyOneScreen(navController: NavController) {
                                         color = colorResource(id = R.color.boloto),
                                     )
                                     val isFavourite by produceState<Boolean>(initialValue = false, item.title) {
-                                        value = db.favouritesDao().isFavourite(item.title, "EightyOneRecipeScreen")
+                                        value = db.favouritesDao().isFavourite(item.title, "EightyNineRecipeScreen")
                                     }
                                     Icon(painter = painterResource(id = if (isFavourite) R.drawable.baseline_favorite_24 else
                                         R.drawable.baseline_favorite_border_24),
@@ -446,7 +446,7 @@ fun EightyOneScreen(navController: NavController) {
                                                     val imageUrisToDelete = selectedDeleteItemRecipe?.images?.split(",")
                                                         ?.filter { it.isNotBlank() }
                                                         ?.map { Uri.parse(it) } ?: emptyList()
-                                                    selectedDeleteItemRecipe?.let { db.eightyOneDao().delete(it) }
+                                                    selectedDeleteItemRecipe?.let { db.eightyNineDao().delete(it) }
                                                     imageUrisToDelete.forEach { imageUri ->
                                                         if (imageUri.scheme == "content") {
                                                             context.contentResolver.delete(imageUri, null, null)
@@ -623,7 +623,7 @@ fun EightyOneScreen(navController: NavController) {
                                     containerColor = colorResource(id = R.color.boloto)
                                 ), onClick = {
                                     scope.launch {
-                                        parseEightyOneLinkAndSave(context = context, titleLink = titleLink, db = db,
+                                        parseEightyNineLinkAndSave(context = context, titleLink = titleLink, db = db,
                                             scope = scope, onSuccess = {
                                                 showDialogAddNewLink.value = false
                                                 titleLink = ""
@@ -669,7 +669,7 @@ fun EightyOneScreen(navController: NavController) {
                                     containerColor = colorResource(id = R.color.boloto)
                                 ), onClick = {
                                     scope.launch {
-                                        db.eightyOneLinksDao().deleteAll()
+                                        db.eightyNineLinksDao().deleteAll()
                                     }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
@@ -771,7 +771,7 @@ fun EightyOneScreen(navController: NavController) {
                                                     ), onClick = {
                                                         scope.launch {
                                                             selectedEditItemLink?.let { it.comment = tempComment
-                                                                db.eightyOneLinksDao().upsertLink(it)
+                                                                db.eightyNineLinksDao().upsertLink(it)
                                                             }
                                                         }
                                                         focusRequester.freeFocus()
@@ -828,7 +828,7 @@ fun EightyOneScreen(navController: NavController) {
                                                 ), onClick = {
                                                     scope.launch {
                                                         selectedDeleteItemLink?.let {
-                                                            db.eightyOneLinksDao().deleteLinks(it)
+                                                            db.eightyNineLinksDao().deleteLinks(it)
                                                         }
                                                     }
                                                     showDialogDeleteItemLink.value = false
@@ -935,9 +935,9 @@ fun EightyOneScreen(navController: NavController) {
                                 if(newTitleText.isNotEmpty() && newContentText.isNotEmpty()){
                                     val imageToSave = selectedImageUri?.toString() ?: R.drawable.noimage.toString()
                                     val videoToSave = selectedRecipeVideo?.toString() ?: "video"
-                                    val recipe = EightyOne(title = newTitleText, content = newContentText,
+                                    val recipe = EightyNine(title = newTitleText, content = newContentText,
                                         images = imageToSave, videos = videoToSave, id = selectedRecipeId)
-                                    scope.launch { db.eightyOneDao().upsert(recipe) }
+                                    scope.launch { db.eightyNineDao().upsert(recipe) }
                                     focusRequester.freeFocus()
                                     keyboardController?.hide()
                                     panelStateRight = PanelState.Hidden
@@ -1069,8 +1069,8 @@ fun EightyOneScreen(navController: NavController) {
         }
     }
 }
-fun parseEightyOneLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
-                          onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<EightyOneLinks>,
+fun parseEightyNineLinkAndSave(context: Context, titleLink: String, db: AppDatabase, scope: CoroutineScope,
+                          onSuccess: () -> Unit, comment : String, id: Int, listState: LazyListState, links: List<EightyNineLinks>,
                           setIsLoading: (Boolean) -> Unit) {
     if (!isNetworkAvailable(context)) {
         setIsLoading(false)
@@ -1138,7 +1138,7 @@ fun parseEightyOneLinkAndSave(context: Context, titleLink: String, db: AppDataba
             setIsLoading(false)
         }
         if (title.isNotEmpty() && textLink.isNotEmpty()) {
-            db.eightyOneLinksDao().upsertLink(EightyOneLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
+            db.eightyNineLinksDao().upsertLink(EightyNineLinks(title = title, link = textLink, image = imageLink, comment = comment, id = id))
             withContext(Dispatchers.Main) {
                 onSuccess()
                 if (links.isNotEmpty()){
